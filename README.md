@@ -58,9 +58,9 @@ for test
 
 ### experiments
 
-1. 
+1. classification cross entropy version 
 
-2. 
+2. new wh loss for (log)
 
 ### Start Guide
 

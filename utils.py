@@ -6,9 +6,12 @@ device = torch.device('cuda')
 
 voc_labels = ('aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable',
               'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor')
+
 label_map = {k: v + 1 for v, k in enumerate(voc_labels)}
 label_map['background'] = 0
 rev_label_map = {v: k for k, v in label_map.items()}  # Inverse mapping
+voc_labels_array = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable',
+                    'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor', 'background']
 
 
 def center_to_corner(cxcy):
@@ -180,7 +183,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
 
     if len(image_boxes) == 0:
         image_boxes.append(torch.FloatTensor([0]).to(device))
-        image_labels.append(torch.LongTensor([0]).to(device))
+        image_labels.append(torch.LongTensor([20]).to(device))
         image_scores.append(torch.FloatTensor([0.]).to(device))
 
     # Concatenate into single tensors
