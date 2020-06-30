@@ -22,8 +22,9 @@ re-implementation of yolo v2 detection
 ### Loss
 
 - xy centor loss 
+$\sum_i\sum_j$
 
-- wh ration loss 
+- wh ratio loss 
 
 - confidence loss
 
