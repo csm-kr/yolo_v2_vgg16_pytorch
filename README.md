@@ -60,7 +60,15 @@ for test
 
 1. classification cross entropy version 
 
+- epoch 20 - 49.05% mAP
+
 2. new wh loss for (log)
+
+- epoch 20 - 49.37% mAP
+
+3. focal loss 
+
+- 
 
 ### Start Guide
 
