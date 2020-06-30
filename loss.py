@@ -114,6 +114,23 @@ class Yolo_Loss(nn.Module):
         # cls_loss = resp_mask.unsqueeze(-1).expand_as(gt_cls) * (gt_cls - pred_cls.cpu()) ** 2  # torch.Size([B, 13, 13, 20])
         cls_loss = resp_mask.unsqueeze(-1).expand_as(gt_cls) * (gt_cls * -1 * torch.log(pred_cls.cpu()))  # soft max loss
 
+        # 6. focal loss
+        # ------------------------------- focal loss -----------------------------------
+        # gt_cls 에서
+        p_t = pred_cls.cpu()
+        gamma = 2
+        alpha = 0.25
+
+        # balanced cross entropy
+        gt_alpha_right_class = torch.full_like(gt_cls, fill_value=alpha)
+        gt_alpha_wrong_class = 1 - gt_alpha_right_class
+        gt_alpha = torch.where(gt_cls == 1, gt_alpha_right_class, gt_alpha_wrong_class)
+
+        focal_cls_loss = resp_mask.unsqueeze(-1).expand_as(gt_cls) * \
+                         (gt_alpha * torch.pow(1-p_t, gamma) * gt_cls * -1 * torch.log(p_t))
+        #  나중에 official 이랑 비교해보기
+        # ------------------------------- focal loss -----------------------------------
+
         loss1 = 5 * xy_loss.sum()
         loss2 = 5 * wh_loss.sum()
         loss3 = 1 * conf_loss.sum()
