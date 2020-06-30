@@ -1,11 +1,10 @@
-html header: <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
 # YOLO V2 detection using vgg16
 
 re-implementation of yolo v2 detection 
 
 ### Setting
 
+- window 10 
 - Python 3.7
 - Pytorch 1.5.0
 - visdom
@@ -24,7 +23,6 @@ re-implementation of yolo v2 detection
 ### Loss
 
 - xy centor loss 
-$$\sum_i\sum_j$$
 
 - wh ratio loss 
 
