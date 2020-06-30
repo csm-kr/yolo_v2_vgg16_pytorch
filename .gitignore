@@ -8,6 +8,7 @@ logs/
 pred/
 gt/
 results/
+.cache_dir/
 
 # pycharm IDE
 __pycache__/
