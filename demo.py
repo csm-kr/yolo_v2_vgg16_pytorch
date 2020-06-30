@@ -67,7 +67,7 @@ if __name__ == '__main__':
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                      std=[0.229, 0.224, 0.225])
 
-    # voc test
+    # test root - put your demo folder and types
     img_path = 'D:\Data\VOC_ROOT\TEST\VOC2007\JPEGImages'
     img_paths = glob.glob(os.path.join(img_path, '*.jpg'))
 
