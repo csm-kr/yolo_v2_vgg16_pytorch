@@ -6,9 +6,7 @@ import os
 import glob
 import cv2
 import time
-from utils import make_pred_bbox, voc_labels_array
-
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+from utils import make_pred_bbox, voc_labels_array, device
 
 
 def demo(original_image, model, conf_thres):
@@ -54,8 +52,8 @@ def demo(original_image, model, conf_thres):
 if __name__ == '__main__':
 
     visualization = True
-    epoch = 2
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    epoch = 4
+
     model = YOLO_VGG_16().to(device)
     checkpoint = torch.load(os.path.join('./saves', 'yolo_v2_vgg_16') + '.{}.pth.tar'.format(epoch))
     model.load_state_dict(checkpoint['model_state_dict'])

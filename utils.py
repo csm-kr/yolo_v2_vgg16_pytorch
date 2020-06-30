@@ -1,15 +1,9 @@
 import torch
 import torch.nn.functional as F
 from torchvision.ops.boxes import nms as torchvision_nms
+from anchor import make_center_anchors
 
-device = torch.device('cuda')
-
-voc_labels = ('aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable',
-              'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor')
-
-label_map = {k: v + 1 for v, k in enumerate(voc_labels)}
-label_map['background'] = 0
-rev_label_map = {v: k for k, v in label_map.items()}  # Inverse mapping
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 voc_labels_array = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable',
                     'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor', 'background']
 
@@ -26,34 +20,6 @@ def corner_to_center(xy):
     cxcy = (xy[..., 2:] + xy[..., :2]) / 2
     wh = xy[..., 2:] - xy[..., :2]
     return torch.cat([cxcy, wh], dim=-1)
-
-
-def cxcy_to_xy(cxcy):
-
-    x1y1 = cxcy[:, :2] - cxcy[:, 2:] / 2
-    x2y2 = cxcy[:, :2] + cxcy[:, 2:] / 2
-    return torch.cat([x1y1, x2y2], dim=1)
-
-
-def xy_to_cxcy(xy):
-
-    cxcy = (xy[:, 2:] + xy[:, :2]) / 2
-    wh = xy[:, 2:] - xy[:, :2]
-    return torch.cat([cxcy, wh], dim=1)
-
-
-def cxcy_to_gcxgcy(cxcy, priors_cxcy):
-
-    gcxcy = (cxcy[:, :2] - priors_cxcy[:, :2]) / (priors_cxcy[:, 2:] / 10)
-    gwh = torch.log(cxcy[:, 2:] / priors_cxcy[:, 2:]) * 5
-    return torch.cat([gcxcy, gwh], dim=1)
-
-
-def gcxgcy_to_cxcy(gcxgcy, priors_cxcy):
-
-    cxcy = gcxgcy[:, :2] * priors_cxcy[:, 2:] / 10 + priors_cxcy[:, :2]
-    wh = torch.exp(gcxgcy[:, 2:] / 5) * priors_cxcy[:, 2:]
-    return torch.cat([cxcy, wh], dim=1)
 
 
 def find_jaccard_overlap(set_1, set_2, eps=1e-5):
@@ -135,9 +101,8 @@ def make_pred_bbox(preds, conf_threshold=0.35):
     # print(pred_xy)
 
     # pred_bbox
-    from anchor import make_center_anchors
     anchors_wh = [(1.3221, 1.73145), (3.19275, 4.00944), (5.05587, 8.09892), (9.47112, 4.84053), (11.2364, 10.0071)]
-    anchors = make_center_anchors(anchors_wh)  # cy, cx, w, h - [8732, 4]
+    anchors = make_center_anchors(anchors_wh)  # cy, cx, w, h - [845, 4]
 
     cxcy_anchors = anchors         # cxcy anchors 0~1
 

@@ -1,8 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
-import numpy as np
-
 from anchor import make_center_anchors
 from utils import find_jaccard_overlap, center_to_corner, corner_to_center
 

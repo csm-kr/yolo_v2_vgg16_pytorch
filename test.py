@@ -1,9 +1,15 @@
 import os
 import torch
-import cv2
 import time
 from utils import make_pred_bbox, voc_labels_array
 from voc_eval import voc_eval
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
+
+# --- for test
+from dataset.voc_dataset import VOC_Dataset
+from loss import Yolo_Loss
+from model import YOLO_VGG_16
 
 
 def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file_name, conf_thres, eval=False):
@@ -65,9 +71,6 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
 
                     bbox *= 416
 
-                    import matplotlib.pyplot as plt
-                    from matplotlib.patches import Rectangle
-
                     # predicted bbox visualization
                     plt.figure('result')
                     plt.imshow(image_np)
@@ -114,11 +117,6 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
 
 
 if __name__ == "__main__":
-
-    from dataset.voc_dataset import VOC_Dataset
-    from loss import Yolo_Loss
-    from model import YOLO_VGG_16
-    from test import test
 
     # 1. epoch
     epoch = 0
