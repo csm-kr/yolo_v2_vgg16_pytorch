@@ -17,12 +17,11 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
                 param_group['lr'] = scheduler_rate[str(epoch)]
 
     # for multi=scale training
-    if epoch % 10 == 0:
-
+    if epoch % 1 == 0:
+        # 320 ~ 608
         rand = np.random.randint(10, 20)
-        rand = 19
-        train_loader.dataset.img_size = 32 * rand
-        print(train_loader.dataset.img_size)
+        train_loader.dataset.set_image_size(32 * rand)
+        print("image_size :", train_loader.dataset.img_size)
 
     # 10. train
     for idx, (images, boxes, labels, _) in enumerate(train_loader):
@@ -44,7 +43,7 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
             lr = param_group['lr']
 
         # for each steps
-        if idx % 10 == 0:
+        if idx % 100 == 0:
             print('Epoch: [{0}]\t'
                   'Step: [{1}/{2}]\t'
                   'Loss: {loss:.4f}\t'
