@@ -54,18 +54,23 @@ class YOLO_VGG_16(nn.Module):
                 nn.init.constant_(c.bias, 0.)
 
     def forward(self, x):
+        output_size = x.size(-1)
+        output_size /= 32
+        o_size = int(output_size)
 
         x = self.middle_feature(x)              # after conv4_3, maxpooling
         skip_x = self.skip_module(x)            # torch.Size([B, 512, 26, 26])--->  torch.Size([B, 64, 26, 26])
 
         # --------------------- yolo v2 reorg layer ---------------------
-        skip_x = skip_x.view(-1, 64, 13, 2, 13, 2).contiguous()
+        skip_x = skip_x.view(-1, 64, o_size, 2, o_size, 2).contiguous()
         skip_x = skip_x.permute(0, 3, 5, 1, 2, 4).contiguous()
-        skip_x = skip_x.view(-1, 256, 13, 13)   # torch.Size([B, 256, 13, 13])
+        skip_x = skip_x.view(-1, 256, o_size, o_size)   # torch.Size([B, 256, 13, 13])
 
         x = self.extra(x)                       # torch.Size([B, 1024, 13, 13])
         x = torch.cat([x, skip_x], dim=1)       # torch.Size([B, 1280, 13, 13])
         x = self.final(x)                       # torch.Size([B, 125, 13, 13])
+
+        # print(x.size())                         # torch.Size([B, 125, out_size, out_size]) # out_size = input_size / 32
         return x
 
     def count_parameters(self):
@@ -76,7 +81,7 @@ if __name__ == '__main__':
     model = YOLO_VGG_16().cuda()
     # model = nn.Sequential(*list(vgg16_bn(pretrained=True).features.children())[:-1]).cuda()
     print(model)
-    image = torch.randn([1, 3, 416, 416]).cuda()
+    image = torch.randn([1, 3, 608, 608]).cuda()
     print(model(image).size())
 
 

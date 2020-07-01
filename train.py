@@ -17,8 +17,10 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
                 param_group['lr'] = scheduler_rate[str(epoch)]
 
     # for multi=scale training
-    if epoch % 10 == 1:
+    if epoch % 10 == 0:
+
         rand = np.random.randint(10, 20)
+        rand = 19
         train_loader.dataset.img_size = 32 * rand
         print(train_loader.dataset.img_size)
 
@@ -47,8 +49,9 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
                   'Step: [{1}/{2}]\t'
                   'Loss: {loss:.4f}\t'
                   'Learning rate: {lr:.7f} s \t'
+                  'Img size: {3} \t'
                   'Time : {time:.4f}\t'
-                  .format(epoch, idx, len(train_loader),
+                  .format(epoch, idx, len(train_loader), train_loader.dataset.img_size,
                           loss=loss,
                           lr=lr,
                           time=toc))

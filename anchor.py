@@ -14,8 +14,8 @@ def make_center_anchors(anchors_wh, grid_size=13):
     anchors_wh = np.array(anchors_wh)  # numpy 로 변경
     wh = torch.from_numpy(anchors_wh)
 
-    xy = xy.view(13, 13, 1, 2).expand(13, 13, 5, 2).type(torch.float32)  # centor
-    wh = wh.view(1, 1, 5, 2).expand(13, 13, 5, 2).type(torch.float32)  # w, h
+    xy = xy.view(grid_size, grid_size, 1, 2).expand(grid_size, grid_size, 5, 2).type(torch.float32)  # centor
+    wh = wh.view(1, 1, 5, 2).expand(grid_size, grid_size, 5, 2).type(torch.float32)  # w, h
     center_anchors = torch.cat([xy, wh], dim=3).cuda()
     # cy cx w h
     """

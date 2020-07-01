@@ -22,25 +22,28 @@ class Yolo_Loss(nn.Module):
         :param anchors:
         :return:
         """
-        batch_size = pred_xy.size(0)
-        resp_mask = torch.zeros([batch_size, 13, 13, 5])  # y, x, anchor, ~
-        gt_xy = torch.zeros([batch_size, 13, 13, 5, 2])
-        gt_wh = torch.zeros([batch_size, 13, 13, 5, 2])
-        gt_conf = torch.zeros([batch_size, 13, 13, 5])
-        gt_cls = torch.zeros([batch_size, 13, 13, 5, 20])
+        out_size = pred_xy.size(2)
+        # print("out_size :", out_size)
 
-        center_anchors = make_center_anchors(self.anchors)
-        corner_anchors = center_to_corner(center_anchors).view(845, 4)
+        batch_size = pred_xy.size(0)
+        resp_mask = torch.zeros([batch_size, out_size, out_size, 5])  # y, x, anchor, ~
+        gt_xy = torch.zeros([batch_size, out_size, out_size, 5, 2])
+        gt_wh = torch.zeros([batch_size, out_size, out_size, 5, 2])
+        gt_conf = torch.zeros([batch_size, out_size, out_size, 5])
+        gt_cls = torch.zeros([batch_size, out_size, out_size, 5, 20])
+
+        center_anchors = make_center_anchors(anchors_wh=self.anchors, grid_size=out_size)
+        corner_anchors = center_to_corner(center_anchors).view(out_size * out_size * 5, 4)
 
         # 1. make resp_mask
         for b in range(batch_size):
 
             label = gt_labels[b]
             corner_gt_box = gt_boxes[b]
-            corner_gt_box_13 = corner_gt_box * 13.
+            corner_gt_box_13 = corner_gt_box * float(out_size)
 
             center_gt_box = corner_to_center(corner_gt_box)
-            center_gt_box_13 = center_gt_box * 13.
+            center_gt_box_13 = center_gt_box * float(out_size)
 
             bxby = center_gt_box_13[..., :2]  # [# obj, 2]
             txty = bxby - bxby.floor()        # [# obj, 2], 0~1 scale
@@ -48,7 +51,7 @@ class Yolo_Loss(nn.Module):
             bwbh = center_gt_box_13[..., 2:]
 
             iou_anchors_gt = find_jaccard_overlap(corner_anchors, corner_gt_box_13)  # [845, # obj]
-            iou_anchors_gt = iou_anchors_gt.view(13, 13, 5, -1)
+            iou_anchors_gt = iou_anchors_gt.view(out_size, out_size, 5, -1)
 
             num_obj = corner_gt_box.size(0)
             for n_obj in range(num_obj):
@@ -74,7 +77,7 @@ class Yolo_Loss(nn.Module):
             corner_pred_bbox = center_to_corner(center_pred_bbox).view(-1, 4)       # [845, 4]
 
             iou_pred_gt = find_jaccard_overlap(corner_pred_bbox, corner_gt_box_13)  # [845, # obj]
-            iou_pred_gt = iou_pred_gt.view(13, 13, 5, -1)
+            iou_pred_gt = iou_pred_gt.view(out_size, out_size, 5, -1)
             gt_conf[b] = iou_pred_gt.max(-1)[0]
 
         return resp_mask, gt_xy, gt_wh, gt_conf, gt_cls
@@ -87,7 +90,9 @@ class Yolo_Loss(nn.Module):
         :param gt_labels:
         :return:
         """
-        pred_targets = pred_targets.view(-1, 13, 13, 5, 5 + 20)
+        out_size = pred_targets.size(1)
+        # print("output_size :", out_size)
+        pred_targets = pred_targets.view(-1, out_size, out_size, 5, 5 + 20)
         pred_xy = pred_targets[..., :2].sigmoid()                  # sigmoid(tx ty)  0, 1
         pred_wh = pred_targets[..., 2:4].exp()                     # 2, 3 || original yolo loss only exp() 1/2.7 ~ 2.7
         pred_conf = pred_targets[..., 4].sigmoid()                 # 4
