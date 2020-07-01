@@ -1,6 +1,7 @@
 import os
 import torch
 import time
+import numpy as np
 
 
 def train(epoch, device, vis, train_loader, model, criterion, optimizer, scheduler, save_path, save_file_name, scheduler_rate=None):
@@ -14,6 +15,12 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
         if str(epoch) in scheduler_rate.keys():
             for param_group in optimizer.param_groups:
                 param_group['lr'] = scheduler_rate[str(epoch)]
+
+    # for multi=scale training
+    if epoch % 10 == 1:
+        rand = np.random.randint(10, 20)
+        train_loader.dataset.img_size = 32 * rand
+        print(train_loader.dataset.img_size)
 
     # 10. train
     for idx, (images, boxes, labels, _) in enumerate(train_loader):

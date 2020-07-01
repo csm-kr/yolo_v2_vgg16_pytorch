@@ -7,7 +7,7 @@ from PIL import Image
 import torch.utils.data as data
 from xml.etree.ElementTree import parse
 from matplotlib.patches import Rectangle
-from dataset.trasform import transform, transform_
+from dataset.trasform import transform_multi_scale_train, transform_
 
 
 class VOC_Dataset(data.Dataset):
@@ -30,6 +30,8 @@ class VOC_Dataset(data.Dataset):
         self.class_dict2 = {i : class_name for i, class_name in enumerate(self.class_names)}
         self.split = split
 
+        self.img_size = 416
+
     def __getitem__(self, idx):
 
         visualize = False
@@ -45,8 +47,9 @@ class VOC_Dataset(data.Dataset):
         difficulties = torch.ByteTensor(is_difficult)  # (n_objects)
         additional_info = torch.FloatTensor([img_name, img_width, img_height])
 
-        # image, boxes, labels = transform(image, boxes, labels)  # transform is resize and normalization
-        image, boxes, labels, difficulties = transform_(image, boxes, labels, difficulties, self.split)
+        # image, boxes, labels, difficulties = transform_(image, boxes, labels, difficulties, self.split)
+        image, boxes, labels, difficulties = transform_multi_scale_train(image, boxes, labels, difficulties, self.split,
+                                                                         self.img_size)
 
         if visualize:
             mean = np.array([0.485, 0.456, 0.406])
@@ -85,6 +88,9 @@ class VOC_Dataset(data.Dataset):
 
     def __len__(self):
         return len(self.img_list)
+
+    def set_image_size(self, img_size):
+        self.img_size = img_size
 
     def parse_voc(self, xml_file_path):
 
