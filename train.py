@@ -17,7 +17,7 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
                 param_group['lr'] = scheduler_rate[str(epoch)]
 
     # for multi=scale training
-    if epoch % 1 == 0:
+    if epoch % 10 == 0 and epoch != 0:
         # 320 ~ 608
         rand = np.random.randint(10, 20)
         train_loader.dataset.set_image_size(32 * rand)

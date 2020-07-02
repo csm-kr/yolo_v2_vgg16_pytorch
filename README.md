@@ -62,6 +62,7 @@ for test
 
 - epoch 19 - 47.79% mAP
 - epoch 20 - 49.05% mAP
+- epoch 40 - 50.07% mAP
 
 2. new wh loss for (log)
 
