@@ -29,7 +29,6 @@ class Yolo_Loss(nn.Module):
         gt_wh = torch.zeros([batch_size, out_size, out_size, 5, 2])
         gt_conf = torch.zeros([batch_size, out_size, out_size, 5])
         gt_cls = torch.zeros([batch_size, out_size, out_size, 5, 20])
-        iou_mask = torch.zeros([batch_size, out_size, out_size, 5])   # y, x, anchor, ~
 
         center_anchors = make_center_anchors(anchors_wh=self.anchors, grid_size=out_size)
         corner_anchors = center_to_corner(center_anchors).view(out_size * out_size * 5, 4)
@@ -52,7 +51,6 @@ class Yolo_Loss(nn.Module):
             iou_anchors_gt = iou_anchors_gt.view(out_size, out_size, 5, -1)
 
             num_obj = corner_gt_box.size(0)
-            iou_mask[b] = (iou_anchors_gt >= 0.5).max(-1)[0].type(torch.float32)  # > 0.5 인 부분만 판단하는
 
             for n_obj in range(num_obj):
                 cx, cy = bxby[n_obj]
@@ -67,7 +65,6 @@ class Yolo_Loss(nn.Module):
                 twth = bwbh[n_obj] / torch.FloatTensor(self.anchors[j]).cuda()   # 비율
                 gt_wh[b, cy, cx, j, :] = twth
                 gt_cls[b, cy, cx, j, int(label[n_obj].item()) - 1] = 1
-                iou_mask[b, cy, cx, j] = 1
 
             pred_xy_ = pred_xy[b]
             pred_wh_ = pred_wh[b]
@@ -76,12 +73,17 @@ class Yolo_Loss(nn.Module):
             center_pred_bbox = torch.cat([center_pred_xy, center_pred_wh], dim=-1)
             corner_pred_bbox = center_to_corner(center_pred_bbox).view(-1, 4)       # [845, 4]
 
-            iou_pred_gt = find_jaccard_overlap(corner_pred_bbox, corner_gt_box_13)  # [845, # obj]
+            iou_pred_gt = find_jaccard_overlap(corner_pred_bbox, corner_gt_box_13)              # [845, # obj]
             iou_pred_gt = iou_pred_gt.view(out_size, out_size, 5, -1)
-            gt_conf[b] = iou_pred_gt.max(-1)[0]  # 각 anchor 에서 제일 큰 애들만
+            iou_pred_gt_obj = iou_pred_gt.max(-1)[0]           # 각 obj 에서 제일 큰 애들         # [13, 13, 5]
+            resp_cell, _ = resp_mask[b].max(-1)                # object exist cell              # [13, 13]
+            resp_cell = resp_cell.unsqueeze(-1).expand_as(iou_pred_gt_obj)                      # [13, 13, 5]
+            gt_conf_ = iou_pred_gt_obj.cpu() * resp_cell
+            # iou_pred_gt_, anchor_idx = iou_pred_gt.max(-1)[0]  # 각 anchor 에서 제일 큰 애들    # [13, 13, 1]
+            gt_conf[b] = gt_conf_  # 각 obj 에서 제일 큰 애들           # [13, 13, 5]
             # + 0.5 를 넘는 애들추가
 
-        return resp_mask, gt_xy, gt_wh, gt_conf, gt_cls, iou_mask
+        return resp_mask, gt_xy, gt_wh, gt_conf, gt_cls
 
     def forward(self, pred_targets, gt_boxes, gt_labels):
         """
@@ -98,8 +100,7 @@ class Yolo_Loss(nn.Module):
         pred_conf = pred_targets[..., 4].sigmoid()                 # 4
         pred_cls = pred_targets[..., 5:]                           # 20
 
-        resp_mask, gt_xy, gt_wh, gt_conf, gt_cls, iou_mask = self.make_target(gt_boxes, gt_labels, pred_xy, pred_wh)
-        resp_mask = iou_mask
+        resp_mask, gt_xy, gt_wh, gt_conf, gt_cls = self.make_target(gt_boxes, gt_labels, pred_xy, pred_wh)
 
         # 1. xy sse
         xy_loss = resp_mask.unsqueeze(-1).expand_as(gt_xy) * (gt_xy - pred_xy.cpu()) ** 2
@@ -109,16 +110,15 @@ class Yolo_Loss(nn.Module):
         # wh_loss = resp_mask.unsqueeze(-1).expand_as(gt_wh) * (gt_wh - pred_wh.cpu()) ** 2
 
         # 3. conf loss
-        conf_loss = iou_mask * (gt_conf - pred_conf.cpu()) ** 2
         conf_loss = resp_mask * (gt_conf - pred_conf.cpu()) ** 2
 
         # 4. no conf loss
-        no_conf_loss = (1 - iou_mask).squeeze(-1) * (gt_conf - pred_conf.cpu()) ** 2
-        no_conf_loss = (1 - resp_mask) * (gt_conf - pred_conf.cpu()) ** 2
+        no_conf_loss = (1 - resp_mask).squeeze(-1) * (gt_conf - pred_conf.cpu()) ** 2
 
         # 5. classification loss
         pred_cls = F.softmax(pred_cls, dim=-1)  # [N*13*13*5,20]
-        cls_loss = resp_mask.unsqueeze(-1).expand_as(gt_cls) * (gt_cls * -1 * torch.log(pred_cls.cpu()))
+        resp_cell = resp_mask.max(-1)[0].unsqueeze(-1).unsqueeze(-1).expand_as(gt_cls)
+        cls_loss = resp_cell * (gt_cls * -1 * torch.log(pred_cls.cpu()))
 
         # resp_mask_ = resp_mask.type(torch.bool)
         # cls_loss = (gt_cls[resp_mask_] * -1 * torch.log(pred_cls[resp_mask_].cpu()))  # cross entropy loss
