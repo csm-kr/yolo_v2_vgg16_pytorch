@@ -99,6 +99,7 @@ class Yolo_Loss(nn.Module):
         pred_cls = pred_targets[..., 5:]                           # 20
 
         resp_mask, gt_xy, gt_wh, gt_conf, gt_cls, iou_mask = self.make_target(gt_boxes, gt_labels, pred_xy, pred_wh)
+        resp_mask = iou_mask
 
         # 1. xy sse
         xy_loss = resp_mask.unsqueeze(-1).expand_as(gt_xy) * (gt_xy - pred_xy.cpu()) ** 2
@@ -109,11 +110,11 @@ class Yolo_Loss(nn.Module):
 
         # 3. conf loss
         conf_loss = iou_mask * (gt_conf - pred_conf.cpu()) ** 2
-        # conf_loss = resp_mask * (gt_conf - pred_conf.cpu()) ** 2
+        conf_loss = resp_mask * (gt_conf - pred_conf.cpu()) ** 2
 
         # 4. no conf loss
         no_conf_loss = (1 - iou_mask).squeeze(-1) * (gt_conf - pred_conf.cpu()) ** 2
-        # no_conf_loss = (1 - resp_mask) * (gt_conf - pred_conf.cpu()) ** 2
+        no_conf_loss = (1 - resp_mask) * (gt_conf - pred_conf.cpu()) ** 2
 
         # 5. classification loss
         pred_cls = F.softmax(pred_cls, dim=-1)  # [N*13*13*5,20]
