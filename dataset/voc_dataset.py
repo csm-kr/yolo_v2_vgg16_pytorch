@@ -34,7 +34,7 @@ class VOC_Dataset(data.Dataset):
 
     def __getitem__(self, idx):
 
-        visualize = False
+        visualize = True
         # --------------------------------------------- img read ------------------------------------------------------
         image = Image.open(self.img_list[idx]).convert('RGB')
         boxes, labels, is_difficult = self.parse_voc(self.anno_list[idx])
@@ -72,11 +72,11 @@ class VOC_Dataset(data.Dataset):
                 # print(self.class_dict2[labels[i].item()])
                 # print('----------------------------------------------------------------------------------')
 
-                plt.gca().add_patch(Rectangle((boxes[i][0] * 416, boxes[i][1] * 416),
-                                              boxes[i][2] * 416 - boxes[i][0] * 416,
-                                              boxes[i][3] * 416 - boxes[i][1] * 416,
+                plt.gca().add_patch(Rectangle((boxes[i][0] * self.img_size, boxes[i][1] * self.img_size),
+                                              boxes[i][2] * self.img_size - boxes[i][0] * self.img_size,
+                                              boxes[i][3] * self.img_size - boxes[i][1] * self.img_size,
                                               linewidth=1, edgecolor='r', facecolor='none'))
-                plt.text(boxes[i][0] * 416 - 10, boxes[i][1] * 416 - 10,
+                plt.text(boxes[i][0] * self.img_size - 10, boxes[i][1] * self.img_size - 10,
                          str(self.class_dict2[labels[i].item()]),
                          bbox=dict(boxstyle='round4', color='grey'))
 
