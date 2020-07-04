@@ -109,18 +109,23 @@ class Yolo_Loss(nn.Module):
         resp_mask, gt_xy, gt_wh, gt_conf, gt_cls = self.make_target(gt_boxes, gt_labels, pred_xy, pred_wh)
 
         # 1. xy sse
+        # sse
         xy_loss = resp_mask.unsqueeze(-1).expand_as(gt_xy) * (gt_xy - pred_xy.cpu()) ** 2
+        xy_loss = resp_mask.unsqueeze(-1).expand_as(gt_xy) * torch.abs(gt_xy - pred_xy.cpu())  # L1 loss
 
         # 2. wh loss
         wh_loss = resp_mask.unsqueeze(-1).expand_as(gt_wh) * (torch.sqrt(gt_wh) - torch.sqrt(pred_wh.cpu())) ** 2
-        # wh_loss = resp_mask.unsqueeze(-1).expand_as(gt_wh) * (gt_wh - pred_wh.cpu()) ** 2
+        wh_loss = resp_mask.unsqueeze(-1).expand_as(gt_wh) * torch.abs(torch.sqrt(gt_wh) - torch.sqrt(pred_wh.cpu()))
+        # L1 loss
 
         # 3. conf loss
         # resp_cell = resp_mask.max(-1)[0].unsqueeze(-1).expand_as(gt_conf)
         conf_loss = resp_mask * (gt_conf - pred_conf.cpu()) ** 2
+        conf_loss = resp_mask * torch.abs(gt_conf - pred_conf.cpu())
 
         # 4. no conf loss
         no_conf_loss = (1 - resp_mask).squeeze(-1) * (gt_conf - pred_conf.cpu()) ** 2
+        no_conf_loss = (1 - resp_mask).squeeze(-1) * torch.abs(gt_conf - pred_conf.cpu())
 
         # 5. classification loss
         pred_cls = F.softmax(pred_cls, dim=-1)  # [N*13*13*5,20]
