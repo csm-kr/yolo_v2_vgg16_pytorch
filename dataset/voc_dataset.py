@@ -34,7 +34,7 @@ class VOC_Dataset(data.Dataset):
 
     def __getitem__(self, idx):
 
-        visualize = False
+        visualize = True
         # --------------------------------------------- img read ------------------------------------------------------
         image = Image.open(self.img_list[idx]).convert('RGB')
         boxes, labels, is_difficult = self.parse_voc(self.anno_list[idx])
