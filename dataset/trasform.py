@@ -304,7 +304,6 @@ def transform_multi_scale_train(image, boxes, labels, difficulties, split, image
         # Expand image (zoom out) with a 50% chance - helpful for training detection of small objects
         # Fill surrounding space with the mean of ImageNet data that our base VGG was trained on
         each_img_mean = torch.mean(new_image, (1, 2))
-        print(each_img_mean)
         if random.random() < 0.5:
             new_image, new_boxes = expand(new_image, boxes, filler=each_img_mean)
 
