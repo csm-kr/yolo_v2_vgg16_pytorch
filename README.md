@@ -64,13 +64,17 @@ for test
 - epoch 20 - 49.05% mAP
 - epoch 40 - 50.07% mAP
 
+
 2. new wh loss for (log)
 
 - epoch 20 - 49.37% mAP
 
-3. focal loss 
+3. multi-scale training 
 
-- 
+- 000 ~ 149 1e-4 51.22% mAP
+- 150 ~ 200 1e-5 54.67% mAP
+
+
 
 ### Start Guide
 

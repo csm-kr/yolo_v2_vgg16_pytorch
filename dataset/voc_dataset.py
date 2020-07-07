@@ -29,7 +29,6 @@ class VOC_Dataset(data.Dataset):
         self.class_dict = {class_name: i for i, class_name in enumerate(self.class_names)}
         self.class_dict2 = {i : class_name for i, class_name in enumerate(self.class_names)}
         self.split = split
-
         self.img_size = 416
 
     def __getitem__(self, idx):

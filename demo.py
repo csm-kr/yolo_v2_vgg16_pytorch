@@ -52,7 +52,7 @@ def demo(original_image, model, conf_thres):
 if __name__ == '__main__':
 
     visualization = True
-    epoch = 4
+    epoch = 144
 
     model = YOLO_VGG_16().to(device)
     checkpoint = torch.load(os.path.join('./saves', 'yolo_v2_vgg_16') + '.{}.pth.tar'.format(epoch))
