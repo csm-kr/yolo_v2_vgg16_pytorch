@@ -58,23 +58,23 @@ for test
 
 ### experiments
 
-1. classification cross entropy version 
+1 -  classification cross entropy version 
 
 - epoch 19 - 47.79% mAP
 - epoch 20 - 49.05% mAP
 - epoch 40 - 50.07% mAP
 
-
-2. new wh loss for (log)
+2 - new wh loss for (log)
 
 - epoch 20 - 49.37% mAP
 
-3. multi-scale training 
+3 - multi-scale training 
 
-- 000 ~ 149 1e-4 51.22% mAP
-- 150 ~ 200 1e-5 54.67% mAP
+- 000 ~ 149 1e-4 51.22% mAP (149 epoch)
+- 150 ~ 169 1e-5 55.04% mAP (169 epoch)
+- 170 ~ 189 1e-6 ??.??% mAP (189 epoch)
 
-
+multi-scale training is not stable, changing large scale from small scale (384 --> 608), it will be easy to exploding loss.
 
 ### Start Guide
 
