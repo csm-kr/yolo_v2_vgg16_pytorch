@@ -119,7 +119,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
 if __name__ == "__main__":
 
     # 1. epoch
-    epoch = 0
+    epoch = 169
     # 2. device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # 3. visdom
