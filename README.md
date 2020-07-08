@@ -75,7 +75,7 @@ for test
 
 multi-scale training is not stable, changing large scale from small scale (384 --> 608), it will be easy to exploding loss.
 
-### Fix Critical errors that uses 0.5 scale anchor to get predict xy   
+***** Fix Critical errors that uses 0.5 scale anchor to get predict xy as loss and make bbox *****
 
 then get 65.46% mAP for 169 exp3 results. 
 

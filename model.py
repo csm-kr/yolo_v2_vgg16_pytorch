@@ -70,7 +70,6 @@ class YOLO_VGG_16(nn.Module):
         x = torch.cat([x, skip_x], dim=1)       # torch.Size([B, 1280, 13, 13])
         x = self.final(x)                       # torch.Size([B, 125, 13, 13])
 
-        # print(x.size())                         # torch.Size([B, 125, out_size, out_size]) # out_size = input_size / 32
         return x
 
     def count_parameters(self):
@@ -81,7 +80,7 @@ if __name__ == '__main__':
     model = YOLO_VGG_16().cuda()
     # model = nn.Sequential(*list(vgg16_bn(pretrained=True).features.children())[:-1]).cuda()
     print(model)
-    image = torch.randn([1, 3, 608, 608]).cuda()
+    image = torch.randn([1, 3, 416, 416]).cuda()
     print(model(image).size())
 
 
