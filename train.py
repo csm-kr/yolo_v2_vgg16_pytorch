@@ -16,12 +16,12 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
             for param_group in optimizer.param_groups:
                 param_group['lr'] = scheduler_rate[str(epoch)]
 
-    # for multi=scale training
-    if epoch % 10 == 0 and epoch != 0:
-        # 320 ~ 608
-        rand = np.random.randint(10, 20)
-        train_loader.dataset.set_image_size(32 * rand)
-        print("image_size :", train_loader.dataset.img_size)
+    # -------------------------- for multi-scale training -------------------------------
+    # if epoch % 10 == 0 and epoch != 0:
+    #     # 320 ~ 608
+    #     rand = np.random.randint(10, 20)
+    #     train_loader.dataset.set_image_size(32 * rand)
+    #     print("image_size :", train_loader.dataset.img_size)
 
     # 10. train
     for idx, (images, boxes, labels, _) in enumerate(train_loader):
