@@ -271,7 +271,7 @@ def transform_(image, boxes, labels, difficulties, split):
     return new_image, new_boxes, new_labels, new_difficulties
 
 
-def transform_multi_scale_train(image, boxes, labels, difficulties, split, image_size):
+def transform_multi_scale_train(image, boxes, labels, difficulties, split, image_size=416):
     """
     Apply the transformations above.
 
