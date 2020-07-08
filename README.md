@@ -72,7 +72,11 @@ for test
 
 - 000 ~ 149 1e-4 51.22% mAP (149 epoch)
 - 150 ~ 169 1e-5 55.04% mAP (169 epoch)
-- 170 ~ 189 1e-6 ??.??% mAP (189 epoch)
+
+4 - 416 scale only training & x,y loss 
+
+- 000 ~ 149 1e-4 51.22% mAP (149 epoch)
+- 150 ~ 169 1e-5 55.04% mAP (169 epoch)
 
 multi-scale training is not stable, changing large scale from small scale (384 --> 608), it will be easy to exploding loss.
 
