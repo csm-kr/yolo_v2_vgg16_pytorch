@@ -109,7 +109,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
     anchors_xy = cxcy_anchors[..., :2]  # torch.Size([13, 13, 5, 2])
     anchors_wh = cxcy_anchors[..., 2:]  # torch.Size([13, 13, 5, 2])
 
-    pred_bbox_xy = anchors_xy.expand_as(pred_xy) + pred_xy  # torch.Size([B, 13, 13, 5, 2])
+    pred_bbox_xy = anchors_xy.floor().expand_as(pred_xy) + pred_xy  # torch.Size([B, 13, 13, 5, 2])  # *********************************** 여기도 0.5 것을 넣어버렸다!!!!!!!!!!!
     pred_bbox_wh = anchors_wh.expand_as(pred_wh) * pred_wh
     pred_bbox = torch.cat([pred_bbox_xy, pred_bbox_wh], dim=-1)  # torch.Size([B, 13, 13, 5, 4])
     pred_bbox = pred_bbox.view(-1, 13 * 13 * 5, 4) / 13.  # rescale 0~1   # [B, 845, 4]  # center_coord.

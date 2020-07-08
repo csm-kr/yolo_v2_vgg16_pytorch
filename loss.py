@@ -68,7 +68,7 @@ class Yolo_Loss(nn.Module):
 
             pred_xy_ = pred_xy[b]
             pred_wh_ = pred_wh[b]
-            center_pred_xy = center_anchors[..., :2] + pred_xy_                     # [845, 2]
+            center_pred_xy = center_anchors[..., :2].floor() + pred_xy_             # [845, 2]  # anchor 0.5 단위를 0 으로!!!!!!!!*****************************
             center_pred_wh = center_anchors[..., 2:] * pred_wh_                     # [845, 2]
             center_pred_bbox = torch.cat([center_pred_xy, center_pred_wh], dim=-1)
             corner_pred_bbox = center_to_corner(center_pred_bbox).view(-1, 4)       # [845, 4]
@@ -111,21 +111,21 @@ class Yolo_Loss(nn.Module):
         # 1. xy sse
         # sse
         xy_loss = resp_mask.unsqueeze(-1).expand_as(gt_xy) * (gt_xy - pred_xy.cpu()) ** 2
-        xy_loss = resp_mask.unsqueeze(-1).expand_as(gt_xy) * torch.abs(gt_xy - pred_xy.cpu())  # L1 loss
+        # xy_loss = resp_mask.unsqueeze(-1).expand_as(gt_xy) * torch.abs(gt_xy - pred_xy.cpu())  # L1 loss
 
         # 2. wh loss
         wh_loss = resp_mask.unsqueeze(-1).expand_as(gt_wh) * (torch.sqrt(gt_wh) - torch.sqrt(pred_wh.cpu())) ** 2
-        wh_loss = resp_mask.unsqueeze(-1).expand_as(gt_wh) * torch.abs(torch.sqrt(gt_wh) - torch.sqrt(pred_wh.cpu()))
+        # wh_loss = resp_mask.unsqueeze(-1).expand_as(gt_wh) * torch.abs(torch.sqrt(gt_wh) - torch.sqrt(pred_wh.cpu()))
         # L1 loss
 
         # 3. conf loss
         # resp_cell = resp_mask.max(-1)[0].unsqueeze(-1).expand_as(gt_conf)
         conf_loss = resp_mask * (gt_conf - pred_conf.cpu()) ** 2
-        conf_loss = resp_mask * torch.abs(gt_conf - pred_conf.cpu())
+        # conf_loss = resp_mask * torch.abs(gt_conf - pred_conf.cpu())
 
         # 4. no conf loss
         no_conf_loss = (1 - resp_mask).squeeze(-1) * (gt_conf - pred_conf.cpu()) ** 2
-        no_conf_loss = (1 - resp_mask).squeeze(-1) * torch.abs(gt_conf - pred_conf.cpu())
+        # no_conf_loss = (1 - resp_mask).squeeze(-1) * torch.abs(gt_conf - pred_conf.cpu())
 
         # 5. classification loss
         pred_cls = F.softmax(pred_cls, dim=-1)  # [N*13*13*5,20]
