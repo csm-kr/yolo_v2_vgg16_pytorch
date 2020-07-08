@@ -73,6 +73,8 @@ for test
 - 000 ~ 149 1e-4 51.22% mAP (149 epoch)
 - 150 ~ 169 1e-5 55.04% mAP (169 epoch)
 
+multi-scale training is not stable, changing large scale from small scale (384 --> 608), it will be easy to exploding loss.
+
 ### Fix Critical errors that uses 0.5 scale anchor to get predict xy   
 
 then get 65.46% mAP for 169 exp3 results. 
@@ -82,8 +84,6 @@ then get 65.46% mAP for 169 exp3 results.
 - 000 ~ 099 1e-4 % mAP (099 epoch)
 - 100 ~ 149 1e-5 % mAP (149 epoch)
 - 150 ~ 199 1e-6 % mAP (199 epoch)
-
-multi-scale training is not stable, changing large scale from small scale (384 --> 608), it will be easy to exploding loss.
 
 ### Start Guide
 
