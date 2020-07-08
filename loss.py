@@ -78,6 +78,7 @@ class Yolo_Loss(nn.Module):
 
             gt_conf[b] = iou_pred_gt.max(-1)[0]  # 각 obj 에서 제일 큰 애들         # [13, 13, 5]
 
+            # ------------------------------- 0.5 추가 --------------------------------------------------
             # iou_pred_gt_obj, _ = iou_pred_gt.max(-1)           # 각 obj 에서 제일 큰 애들         # [13, 13, 5]
             #
             # resp_cell, _ = resp_mask[b].max(-1)                # object exist cell              # [13, 13]
@@ -129,13 +130,9 @@ class Yolo_Loss(nn.Module):
 
         # 5. classification loss
         pred_cls = F.softmax(pred_cls, dim=-1)  # [N*13*13*5,20]
-        resp_cell = resp_mask.max(-1)[0].unsqueeze(-1).unsqueeze(-1).expand_as(gt_cls)
+        resp_cell = resp_mask.max(-1)[0].unsqueeze(-1).unsqueeze(-1).expand_as(gt_cls)  # [B, 13, 13, 5, 20]
         cls_loss = resp_cell * (gt_cls * -1 * torch.log(pred_cls.cpu()))
-        # cls_loss = resp_mask.unsqueeze(-1).expand_as(gt_cls) * (gt_cls * -1 * torch.log(pred_cls.cpu()))
-
-        # resp_mask_ = resp_mask.type(torch.bool)
-        # cls_loss = (gt_cls[resp_mask_] * -1 * torch.log(pred_cls[resp_mask_].cpu()))  # cross entropy loss
-        # cls_loss = resp_mask.unsqueeze(-1).expand_as(gt_cls) * (gt_cls - pred_cls.cpu()) ** 2  # original code
+        cls_loss = resp_cell * (gt_cls - pred_cls.cpu()) ** 2       # original code
         # torch.Size([B, 13, 13, 20])
 
         # ------------------------------- focal loss -----------------------------------
