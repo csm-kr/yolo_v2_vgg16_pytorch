@@ -81,6 +81,8 @@ then get 65.46% mAP for 169 exp3 results.
 
 4 - 416 scale only training use original paper loss  
 
+
+79 epoch 67.77% mAP
 - 000 ~ 099 1e-4 % mAP (099 epoch)
 - 100 ~ 149 1e-5 % mAP (149 epoch)
 - 150 ~ 199 1e-6 % mAP (199 epoch)

@@ -63,7 +63,7 @@ def main():
                           weight_decay=5e-4)
 
     # 9. scheduler
-    scheduler = MultiStepLR(optimizer=optimizer, milestones=[120], gamma=0.1)
+    scheduler = MultiStepLR(optimizer=optimizer, milestones=[100, 150], gamma=0.1)
     scheduler_rate = {"0": 1e-5, "5": 1e-4, "80": 1e-5, "110": 1e-6}
 
     scheduler = None
