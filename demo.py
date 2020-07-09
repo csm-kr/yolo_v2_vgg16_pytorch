@@ -52,7 +52,7 @@ def demo(original_image, model, conf_thres):
 if __name__ == '__main__':
 
     visualization = True
-    epoch = 62
+    epoch = 99
 
     model = YOLO_VGG_16().to(device)
     checkpoint = torch.load(os.path.join('./saves', 'yolo_v2_vgg_16') + '.{}.pth.tar'.format(epoch))
@@ -81,7 +81,6 @@ if __name__ == '__main__':
             # for each a image, outputs are boxes and labels.
             img = Image.open(img_path, mode='r').convert('RGB')
             boxes, labels, scores, det_time = demo(img, model=model, conf_thres=0.3)
-
             total_time += det_time
             if i % 100 == 0:
                 print("[{}/{}]".format(i, len(img_paths)))
