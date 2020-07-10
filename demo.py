@@ -14,10 +14,7 @@ def demo(original_image, model, conf_thres):
 
     :param original_image:
     :param model:
-    :param min_score:
-    :param max_overlap:
-    :param top_k:
-    :param priors_cxcy:
+    :param conf_thres:
     :return:
     """
 
@@ -52,7 +49,7 @@ def demo(original_image, model, conf_thres):
 if __name__ == '__main__':
 
     visualization = True
-    epoch = 99
+    epoch = 159
 
     model = YOLO_VGG_16().to(device)
     checkpoint = torch.load(os.path.join('./saves', 'yolo_v2_vgg_16') + '.{}.pth.tar'.format(epoch))
@@ -100,7 +97,7 @@ if __name__ == '__main__':
                                 text=labels[i],
                                 org=(boxes[i][0] + 10, boxes[i][1] + 10),
                                 fontFace=0, fontScale=0.7,
-                                color=(0, 255, 0))
+                                color=(255, 255, 0))
 
                 cv2.imshow('input', img)
                 cv2.waitKey(0)

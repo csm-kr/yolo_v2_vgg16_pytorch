@@ -163,7 +163,6 @@ class Yolo_Loss(nn.Module):
 if __name__ == '__main__':
     image = torch.randn([5, 3, 416, 416])
     pred = torch.zeros([5, 13, 13, 125])  # batch, 13, 13, etc...
-
     criterion = Yolo_Loss(num_classes=20)
 
 

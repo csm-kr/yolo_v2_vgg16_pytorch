@@ -102,7 +102,6 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
                               time=toc))
 
         mAP = voc_eval("D:\Data\VOC_ROOT\TEST\VOC2007\Annotations", det_additional, det_boxes, det_scores, det_labels)
-        # print(mAP)
 
         if vis is not None:
             # loss plot
