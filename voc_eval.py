@@ -91,6 +91,10 @@ def save_pred(additional, bboxes, scores, classes, class_name, gt_classes, cache
             bbox = str(box[0].item()) + " " + str(box[1].item()) + " " + str(box[2].item()) + " " + str(box[3].item())
             confidence = str(score.item())  # [1]
 
+            class_num = int(class_.item())
+            if class_num == 20:
+                pass
+
             if class_name == gt_classes[int(class_.item())]:
                 preds_dicts.append({"confidence": confidence, "file_id": img_name, "bbox": bbox})
 

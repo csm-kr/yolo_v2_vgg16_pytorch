@@ -118,7 +118,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
 if __name__ == "__main__":
 
     # 1. epoch
-    epoch = 169
+    epoch = 149
     # 2. device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # 3. visdom
@@ -145,7 +145,7 @@ if __name__ == "__main__":
          save_path='./saves',
          save_file_name='yolo_v2_vgg_16',
          eval=True,
-         conf_thres=0.1)
+         conf_thres=0.01)
 
 
 

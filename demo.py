@@ -9,6 +9,34 @@ import time
 from utils import make_pred_bbox, voc_labels_array, device
 
 
+def save_det_txt_for_mAP(file_name, bbox, cls, score):
+    '''
+    file name 을 mAP 에 넣을 수 있도록 만드는 부분
+    :param file_name:
+    :param bbox:
+    :param cls:
+    :param score:
+    :return:
+    '''
+
+    # score = score[0]
+    if not os.path.isdir('./pred'):
+        os.mkdir('./pred')
+    f = open(os.path.join("./pred", file_name + '.txt'), 'w')
+    for idx, t in enumerate(bbox):
+        if cls[idx] == 'background':
+            continue
+        class_name = cls[idx]
+        data = class_name + \
+               " " + str(score[idx].item()) + \
+               " " + str(t[0].item()) + \
+               " " + str(t[1].item()) + \
+               " " + str(t[2].item()) + \
+               " " + str(t[3].item()) + "\n"
+        f.write(data)
+    f.close()
+
+
 def demo(original_image, model, conf_thres):
     """
 
@@ -48,8 +76,8 @@ def demo(original_image, model, conf_thres):
 
 if __name__ == '__main__':
 
-    visualization = True
-    epoch = 159
+    visualization = False
+    epoch = 149
 
     model = YOLO_VGG_16().to(device)
     checkpoint = torch.load(os.path.join('./saves', 'yolo_v2_vgg_16') + '.{}.pth.tar'.format(epoch))
@@ -77,7 +105,11 @@ if __name__ == '__main__':
 
             # for each a image, outputs are boxes and labels.
             img = Image.open(img_path, mode='r').convert('RGB')
-            boxes, labels, scores, det_time = demo(img, model=model, conf_thres=0.3)
+            boxes, labels, scores, det_time = demo(img, model=model, conf_thres=0.01)
+
+            name = os.path.basename(img_path).split('.')[0]  # .replace('.jpg', '.txt')
+            save_det_txt_for_mAP(file_name=name, bbox=boxes, cls=labels, score=scores)
+
             total_time += det_time
             if i % 100 == 0:
                 print("[{}/{}]".format(i, len(img_paths)))

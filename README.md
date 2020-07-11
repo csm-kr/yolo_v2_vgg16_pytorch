@@ -85,6 +85,7 @@ then get 65.46% mAP for 169 exp3 results.
 079 epoch 67.77% mAP
 099 epoch 70.84% mAP
 149 epoch 75.50% mAP
+199 epoch 75.03% mAP
 
 - 000 ~ 099 1e-4 70.84% mAP (099 epoch)
 - 100 ~ 149 1e-5 75.50% mAP (149 epoch) 
