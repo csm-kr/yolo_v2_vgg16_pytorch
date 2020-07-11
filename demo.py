@@ -57,7 +57,7 @@ def demo(original_image, model, conf_thres):
     # Forward prop. # make batch 1
     preds = model(image.unsqueeze(0))
     preds = preds.permute(0, 2, 3, 1)  # B, 13, 13, 125
-    bbox, cls, scores = make_pred_bbox(preds=preds, conf_threshold=conf_thres)  # 가장큰 네모 1개 뽑기
+    bbox, cls, scores = make_pred_bbox(preds=preds, conf_threshold=conf_thres)  # 가장큰 네모 1개 뽑기 not batch score
 
     # detection time
     detection_time = time.time() - tic

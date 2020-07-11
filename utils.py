@@ -147,7 +147,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
         image_scores.append(sorted_scores[keep])
 
     if len(image_boxes) == 0:
-        image_boxes.append(torch.FloatTensor([0]).to(device))
+        image_boxes.append(torch.FloatTensor([[0., 0., 1., 1.]]).to(device))
         image_labels.append(torch.LongTensor([20]).to(device))
         image_scores.append(torch.FloatTensor([0.]).to(device))
 

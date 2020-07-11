@@ -46,9 +46,9 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
                 bbox, cls, scores = make_pred_bbox(preds=preds, conf_threshold=conf_thres)  # 가장큰 네모 1개 뽑기
 
                 # bbox 가 검출이 되지 않으면 그냥 넘어간다.
-                if bbox.size(0) == 1:
-                    # print(idx, " continues")
-                    continue
+                # if bbox.size(0) == 1:
+                #     # print(idx, " continues")
+                #     continue
 
                 det_additional.append(additional_info[0])
                 det_boxes.append(bbox)
@@ -118,7 +118,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
 if __name__ == "__main__":
 
     # 1. epoch
-    epoch = 149
+    epoch = 199
     # 2. device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     # 3. visdom
