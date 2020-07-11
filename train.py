@@ -4,17 +4,11 @@ import time
 import numpy as np
 
 
-def train(epoch, device, vis, train_loader, model, criterion, optimizer, scheduler, save_path, save_file_name, scheduler_rate=None):
+def train(epoch, device, vis, train_loader, model, criterion, optimizer, scheduler, save_path, save_file_name):
 
     print('Training of epoch [{}]'.format(epoch))
     tic = time.time()
     model.train()
-
-    if scheduler_rate is not None:
-
-        if str(epoch) in scheduler_rate.keys():
-            for param_group in optimizer.param_groups:
-                param_group['lr'] = scheduler_rate[str(epoch)]
 
     # -------------------------- for multi-scale training -------------------------------
     # if epoch % 10 == 0 and epoch != 0:
@@ -72,6 +66,7 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
     checkpoint = {'epoch': epoch,
                   'model_state_dict': model.state_dict(),
                   'optimizer_state_dict': optimizer.state_dict()}
+
     if scheduler is not None:
         checkpoint = {'epoch': epoch,
                       'model_state_dict': model.state_dict(),
