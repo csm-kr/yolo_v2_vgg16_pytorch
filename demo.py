@@ -118,7 +118,7 @@ if __name__ == '__main__':
 
     print(len(img_paths))
     with torch.no_grad():
-        for i, img_path in enumerate(img_paths):
+        for j, img_path in enumerate(img_paths):
 
             # for each a image, outputs are boxes and labels.
             img = Image.open(img_path, mode='r').convert('RGB')
@@ -128,9 +128,9 @@ if __name__ == '__main__':
             save_det_txt_for_mAP(file_name=name, bbox=boxes, cls=labels, score=scores)
 
             total_time += det_time
-            if i % 100 == 0:
-                print("[{}/{}]".format(i, len(img_paths)))
-                print("fps : {:.4f}".format(i / total_time))
+            if j % 100 == 0:
+                print("[{}/{}]".format(j, len(img_paths)))
+                print("fps : {:.4f}".format(j / total_time))
 
             if visualization:
                 img = cv2.imread(img_path)
@@ -161,6 +161,7 @@ if __name__ == '__main__':
                                 fontFace=0, fontScale=0.4,
                                 color=(255, 255, 255))
 
+                # cv2.imwrite('{}.jpg'.format(j), img)
                 cv2.imshow('input', img)
                 cv2.waitKey(0)
 
