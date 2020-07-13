@@ -76,7 +76,7 @@ to assign gt bbox to anchors.
 
 so we get positive anchors if iou(bbox, anchors) > 0.5
 
-For positive anchors, it is xy_gt that scales from 0 to 1 to which position in the center of gt_bbox corresponds to the cell.
+For positive anchors, it is xy_gt that scales 0 to 1 to which position in the center of gt_bbox corresponds to the cell.
 
 also, for positive anchors, wh_gt is the ratio of gt_bbox and anchor boxes.
 
