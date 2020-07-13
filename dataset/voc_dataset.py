@@ -19,8 +19,9 @@ class VOC_Dataset(data.Dataset):
                    'motorbike', 'person', 'pottedplant',
                    'sheep', 'sofa', 'train', 'tvmonitor')
 
-    def __init__(self, root="D:\Data\VOC_ROOT\TRAIN", split='TRAIN'):
+    def __init__(self, root="D:\Data\VOC_ROOT", split='TRAIN'):
         super(VOC_Dataset, self).__init__()
+        root = os.path.join(root, split)
         self.img_list = sorted(glob.glob(os.path.join(root, '*/JPEGImages/*.jpg')))
         self.anno_list = sorted(glob.glob(os.path.join(root, '*/Annotations/*.xml')))
         self.class_dict = {class_name: i for i, class_name in enumerate(self.class_names)}
@@ -161,7 +162,7 @@ class VOC_Dataset(data.Dataset):
 
 if __name__ == "__main__":
 
-    train_set = VOC_Dataset("D:\Data\VOC_ROOT\TRAIN", split='TRAIN')
+    train_set = VOC_Dataset("D:\Data\VOC_ROOT", split='TRAIN')
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=1,
                                                collate_fn=train_set.collate_fn,
