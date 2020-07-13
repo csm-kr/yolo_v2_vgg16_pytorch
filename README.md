@@ -59,7 +59,7 @@ to test, we used voc2007test dataset
 
 - ##### Model
 
-![model](https://user-images.githubusercontent.com/18729104/87277353-14170d80-c51d-11ea-8660-86c4bac1c1ea.JPG)
+![model](https://user-images.githubusercontent.com/18729104/87277514-6821f200-c51d-11ea-9558-f5ecb9aece02.JPG)
 
 - ##### Loss
 
