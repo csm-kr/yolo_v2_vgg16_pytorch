@@ -34,8 +34,8 @@ def main():
     vis = visdom.Visdom()
 
     # 4. dataset
-    train_set = VOC_Dataset(root="D:\Data\VOC_ROOT\TRAIN", split='TRAIN')
-    test_set = VOC_Dataset(root="D:\Data\VOC_ROOT\TEST", split='TEST')
+    train_set = VOC_Dataset(root="D:\Data\VOC_ROOT", split='TRAIN')
+    test_set = VOC_Dataset(root="D:\Data\VOC_ROOT", split='TEST')
 
     # 5. dataloader
     train_loader = DataLoader(dataset=train_set,

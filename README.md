@@ -115,4 +115,55 @@ evaluation is a voc metric, mAP(iou>0.5) and exactly same to official python mAP
 
 - for training
 
+```
+# python main.py 
+usage: main.py [-h] [--batch_size] [--conf_thres] 
+               [--epochs] [--lr] [--num_workers]
+               [--save_file_name] [--save_path] [--start_epoch]
 
+  -h, --help            show this help message and exit
+  --batch_size          for training batch size, test batch is only 1.
+  --conf_thres          for testing, confience threshold, default 0.01 
+  --epochs              whole traning epochs 
+  --lr                  initial learning rate (default 1e-3) 
+  --num_workers         dataset num_workers (default 2)
+  --save_file_name      when you do experiment, you can change save_file_name to distinguish other pths.
+  --save_path           the path to save .pth file
+  --start_epoch         when you resume, set the start epochs. 
+```
+
+before test and demo, we must have trained .pth file(weight params) you can download 149 epoch weights
+at https://drive.google.com/file/d/1cOadYYkwXKzAf7YGYokEAEn1ofzx4QDX/view?usp=sharing
+and then make ./saves file place the weight in the file.
+
+- for testing
+
+```
+# python test.py 
+usage: test.py [-h] [--test_epoch] [--save_path] 
+               [--save_file_name] [--conf_thres]
+
+  -h, --help            show this help message and exit
+  --test_epoch          for testing, which epoch param do we get
+  --save_path           for testing, params path (default './saves') 
+  --save_file_name      save_file_name to distinguish other params. (default 'yolo_v2_vgg_16')
+  --conf_thres          for testing, confience threshold which detector detect above the thres (default 0.01) 
+```
+
+- for demo
+
+```
+# python demo.py 
+usage: demo.py [-h] [--demo_img_path] [--demo_img_type] 
+               [--visualization] [--epoch] [--save_path]
+               [--save_file_name] [--conf_thres]
+
+  -h, --help            show this help message and exit
+  --demo_img_path       The path that contains the image you want to detect
+  --demo_img_type       The type of images you want to detect
+  --visualization       Whether to visualize (default True)
+  --epoch               for demo, which epoch param do we get
+  --save_path           for demo, params path (default './saves') 
+  --save_file_name      save_file_name to distinguish other params. (default 'yolo_v2_vgg_16')
+  --conf_thres          for demo, confience threshold which detector detect above the thres (default 0.35) 
+```
