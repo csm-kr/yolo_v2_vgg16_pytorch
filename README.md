@@ -23,6 +23,9 @@ The goal of this repo. is to re-implement a famous one-stage object detection, y
 |original papers| VOC2007 train + VOC2012 train|   VOC2007 test  |  416 x 416 |   76.8  | 67  |
 |ours           | VOC2007 train + VOC2012 train|   VOC2007 test  |  416 x 416 | **77.3**| 19  |
 
+![result](https://user-images.githubusercontent.com/18729104/87283756-978e2a00-c530-11ea-91b0-6c70de532eeb.gif)
+
+detection result of our models. 
 
 ### Implementation
 
