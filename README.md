@@ -28,29 +28,34 @@ The goal of this repo. is to re-implement a famous one-stage object detection, y
 
 - ##### Dataset
 
+Firstly, you make a dataset file structure like bellow for voc train and test.
 
+VOCtrainval needs to contain TRAIN file and VOCtest contain TEST file.  
 ```bash
-root|-- dataset
-        |-- __init__.py
-        |-- dataset.py
-    |-- model
-        |-- __init__.py
-        |-- model.py
-    |-- learning
-        |-- __init__.py
-        |-- evaluator.py
-        |-- optimizer.py
-    |-- .gitignore
-    |-- data
-        |-- train.py
-        |-- test.py
-    |-- logs
-    |-- save
-    |-- train.py
-    |-- test.py
-    |-- utils.py
+root|-- TEST
+        |-- VOC2007
+            |-- Annotations
+            |-- ImageSets
+            |-- JPEGImages
+            |-- SegmentationClass
+            |-- SegmentationObject
+    |-- TRAIN
+        |-- VOC2007
+            |-- Annotations
+            |-- ImageSets
+            |-- JPEGImages
+            |-- SegmentationClass
+            |-- SegmentationObject
+        |-- VOC2012
+            |-- Annotations
+            |-- ImageSets
+            |-- JPEGImages
+            |-- SegmentationClass
+            |-- SegmentationObject
 ```
+to train, we used voc2007trainval + voc2012trainval dataset,
 
+to test, we used voc2007test dataset
 
 - ##### Model
 
@@ -87,59 +92,6 @@ root|-- dataset
 
 - whole loss is sum of those losses
 
-### Dataset
-
-for train 
-- voc 2007 train + voc 2012 train
-
-for test
-- voc 2007 test
-
-### evaluation 
-
-- mAP (metric for object detection using voc 2012 IOU:>0.5)
-
-- 57.3% not cover original darknet19 yolo v2 
-
-### training 
-
-- learning rate : 1e-4
-
-- optimizer : sgd
-
-- lr decay : 0 ~ 99 (1e-4), 100~149(1e-5)
-
-### experiments
-
-1 -  classification cross entropy version 
-
-- epoch 19 - 47.79% mAP
-- epoch 20 - 49.05% mAP
-- epoch 40 - 50.07% mAP
-
-2 - new wh loss for (log)
-
-- epoch 20 - 49.37% mAP
-
-3 - multi-scale training + L1 loss for each 
-
-- 000 ~ 149 1e-4 51.22% mAP (149 epoch)
-- 150 ~ 169 1e-5 55.04% mAP (169 epoch)
-
-multi-scale training is not stable, changing large scale from small scale (384 --> 608), it will be easy to exploding loss.
-
-***** Fix Critical errors that uses 0.5 scale anchor to get predict xy as loss and make bbox *****
-
-then get 65.46% mAP for 169 exp3 results. 
-
-4 - 416 scale only training use original paper loss  
-
-049 epoch 62.42% mAP 
-099 epoch 72.04% mAP
-149 epoch 77.03% mAP
-
-- 000 ~ 099 1e-4 
-- 100 ~ 149 1e-5 
 
 ### Start Guide for Train / Test / Demo
 
