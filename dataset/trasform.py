@@ -3,6 +3,8 @@ import torchvision.transforms.functional as FT
 import random
 from utils import find_jaccard_overlap
 
+# For transform.py code, refer to utils.py of https://github.com/sgrvinod/a-PyTorch-Tutorial-to-Object-Detection.
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # expand

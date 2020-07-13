@@ -7,6 +7,8 @@ import torch
 import time
 import numpy as np
 
+# For voc_eval.py code, refer to https://github.com/Cartucho/mAP
+
 
 def parse_voc(filename):
     """ Parse a PASCAL VOC xml file """
