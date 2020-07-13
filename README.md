@@ -65,6 +65,9 @@ Unlike the existing yolo v2, the backbone uses vgg instead of darknet 19, and th
 
 - ##### Loss
 
+![losses](https://user-images.githubusercontent.com/18729104/87278340-2b56fa80-c51f-11ea-89a3-600835beca8f.JPG)
+
+
 xy centor loss 
 
 wh ratio loss 
