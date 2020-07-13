@@ -59,9 +59,23 @@ to test, we used voc2007test dataset
 
 - ##### Model
 
+Unlike the existing yolo v2, the backbone uses vgg instead of darknet 19, and the modules behind it have been modified a little bit.
+
 ![model](https://user-images.githubusercontent.com/18729104/87277514-6821f200-c51d-11ea-9558-f5ecb9aece02.JPG)
 
 - ##### Loss
+
+xy centor loss 
+
+wh ratio loss 
+
+confidence loss
+
+no conf loss
+
+classification loss 
+
+whole loss is sum of those losses
 
 - ##### Train
 
@@ -70,30 +84,9 @@ to test, we used voc2007test dataset
 |         000-099      |      1e-4     |
 |         100-149      |      1e-5     |
 
-
 - ##### Evaluation
 
-### experiments
-2. 
-- pretrained vgg 16 bn (torchvision.model)
-- conv 5_3
-- skip module
-- extra, final detection module 
-
-### Loss
-
-- xy centor loss 
-
-- wh ratio loss 
-
-- confidence loss
-
-- no conf loss
-
-- classification loss 
-
-- whole loss is sum of those losses
-
+evaluation is a voc metric, mAP(iou>0.5) and exactly same to official python mAP code https://github.com/Cartucho/mAP
 
 ### Start Guide for Train / Test / Demo
 
