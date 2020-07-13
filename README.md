@@ -61,8 +61,7 @@ to test, we used voc2007test dataset
 
 Unlike the existing yolo v2, the backbone uses vgg instead of darknet 19, and the modules behind it have been modified a little bit.
 
-![model](https://user-images.githubusercontent.com/18729104/87277514-6821f200-c51d-11ea-9558-f5ecb9aece02.JPG)
-
+![model](https://user-images.githubusercontent.com/18729104/87281786-8a703b80-c52e-11ea-9f1f-3bb1d3d23a58.JPG)
 - ##### Loss
 
 *01- what is the cell concept?*
