@@ -133,7 +133,7 @@ if __name__ == "__main__":
     vis = None
 
     # 4. data set
-    test_set = VOC_Dataset(root="D:\Data\VOC_ROOT\TEST", split='TEST')
+    test_set = VOC_Dataset(root="D:\Data\VOC_ROOT", split='TEST')
     test_loader = torch.utils.data.DataLoader(test_set,
                                               batch_size=1,
                                               collate_fn=test_set.collate_fn,
