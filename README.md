@@ -90,6 +90,8 @@ no conf is 1 - gt_conf
 whole loss consists of xy centor loss, wh ratio loss, confidence loss, no conf loss, and classification loss.
 original paper losses are sum square errors of each component, except to wh ration loss is root sse. 
 
+![yolo_v2_losses](https://user-images.githubusercontent.com/18729104/87280599-4af51f80-c52d-11ea-86c7-f4dc8786f827.JPG)
+
 - ##### Train
 
 optimizer is SGD (weight_decay : 5e-4, momentum : 0.9)
