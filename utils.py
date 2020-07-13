@@ -9,7 +9,7 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 voc_labels_array = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable',
                     'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor', 'background']
 
-color_array = [(0, 136, 221), (100, 56, 31), (155, 27, 31), (30, 236, 215), (221, 136, 89), (150, 222, 111), (113, 76, 121),
+color_array = [(0, 136, 221), (100, 56, 231), (155, 27, 31), (30, 236, 215), (221, 136, 89), (150, 222, 111), (113, 76, 121),
                (47, 77, 33), (159, 176, 11), (57, 86, 17), (66, 76, 151), (117, 85, 28), (62, 147, 75), (119, 85, 82),
                (89, 55, 99), (59, 216, 15), (99, 75, 211), (172, 177, 200), (180, 130, 124), (98, 56, 127), (120, 199, 100)]
 
