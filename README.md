@@ -65,25 +65,41 @@ Unlike the existing yolo v2, the backbone uses vgg instead of darknet 19, and th
 
 - ##### Loss
 
-![losses](https://user-images.githubusercontent.com/18729104/87278340-2b56fa80-c51f-11ea-89a3-600835beca8f.JPG)
+*01- what is the cell concept?*
 
+yolo considers the final layer feature map size as a cell size. 
 
-xy centor loss 
+For example, an image of 416 resolution becomes a cell of 13 size.
 
-wh ratio loss 
+*02- make_target*
 
-confidence loss
+to assign gt bbox to anchors. 
 
-no conf loss
+so we get positive anchors if iou(bbox, anchors) > 0.5
 
-classification loss 
+For positive anchors, it is xy_gt that scales from 0 to 1 to which position in the center of gt_bbox corresponds to the cell.
 
-whole loss is sum of those losses
+also, for positive anchors, wh_gt is the ratio of gt_bbox and anchor boxes.
+
+gt_conf is max iou(pred_bbox, gt_bbox) for each anchor in cells. 
+
+no conf is 1 - gt_conf 
+
+*03- whole loss*
+
+whole loss consists of xy centor loss, wh ratio loss, confidence loss, no conf loss, and classification loss.
+original paper losses are sum square errors of each component, except to wh ration loss is root sse. 
 
 - ##### Train
 
+optimizer is SGD (weight_decay : 5e-4, momentum : 0.9)
+
+train until convergence (about 150 epochs)
+
+learning rate decay
+
 |        Epoches       | Learning rate |
-|----------------------|:---------------:|
+|----------------------|:-------------:|
 |         000-099      |      1e-4     |
 |         100-149      |      1e-5     |
 
