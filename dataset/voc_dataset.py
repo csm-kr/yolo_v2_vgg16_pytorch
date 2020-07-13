@@ -7,7 +7,7 @@ from PIL import Image
 import torch.utils.data as data
 from xml.etree.ElementTree import parse
 from matplotlib.patches import Rectangle
-from dataset.trasform import transform_multi_scale_train, transform_
+from dataset.trasform import transform
 
 
 class VOC_Dataset(data.Dataset):
@@ -19,37 +19,42 @@ class VOC_Dataset(data.Dataset):
                    'motorbike', 'person', 'pottedplant',
                    'sheep', 'sofa', 'train', 'tvmonitor')
 
-    """
-    ssd_dataset 읽어드리는 로더
-    """
     def __init__(self, root="D:\Data\VOC_ROOT\TRAIN", split='TRAIN'):
         super(VOC_Dataset, self).__init__()
         self.img_list = sorted(glob.glob(os.path.join(root, '*/JPEGImages/*.jpg')))
         self.anno_list = sorted(glob.glob(os.path.join(root, '*/Annotations/*.xml')))
         self.class_dict = {class_name: i for i, class_name in enumerate(self.class_names)}
-        self.class_dict2 = {i : class_name for i, class_name in enumerate(self.class_names)}
+        self.class_dict_inv = {i : class_name for i, class_name in enumerate(self.class_names)}
         self.split = split
         self.img_size = 416
 
     def __getitem__(self, idx):
 
         visualize = False
-        # --------------------------------------------- img read ------------------------------------------------------
+        # load img
         image = Image.open(self.img_list[idx]).convert('RGB')
+
+        # load labels
         boxes, labels, is_difficult = self.parse_voc(self.anno_list[idx])
+
+        # load img name for string
         img_name = os.path.basename(self.anno_list[idx]).split('.')[0]
-        img_name = float(img_name)
+        img_name_to_ascii = [ord(c) for c in img_name]
+
+        # load img width and height
         img_width, img_height = float(image.size[0]), float(image.size[1])
 
+        # convert to tensor
         boxes = torch.FloatTensor(boxes)
         labels = torch.LongTensor(labels)
         difficulties = torch.ByteTensor(is_difficult)  # (n_objects)
-        additional_info = torch.FloatTensor([img_name, img_width, img_height])
+        img_name = torch.FloatTensor([img_name_to_ascii])
+        additional_info = torch.FloatTensor([img_width, img_height])
 
-        # image, boxes, labels, difficulties = transform_(image, boxes, labels, difficulties, self.split)
-        image, boxes, labels, difficulties = transform_multi_scale_train(image, boxes, labels, difficulties, self.split,
-                                                                         self.img_size)
+        # data augmentation
+        image, boxes, labels, difficulties = transform(image, boxes, labels, difficulties, self.split)
 
+        # visualization
         if visualize:
             mean = np.array([0.485, 0.456, 0.406])
             std = np.array([0.229, 0.224, 0.225])
@@ -67,21 +72,17 @@ class VOC_Dataset(data.Dataset):
             for i in range(len(boxes)):
 
                 print(boxes[i], labels[i])
-                # print([class_name for class_name, idx in self.class_dict.items() if idx == int(labels[i])])
-                # print(self.class_dict2[labels[i].item()])
-                # print('----------------------------------------------------------------------------------')
-
                 plt.gca().add_patch(Rectangle((boxes[i][0] * self.img_size, boxes[i][1] * self.img_size),
                                               boxes[i][2] * self.img_size - boxes[i][0] * self.img_size,
                                               boxes[i][3] * self.img_size - boxes[i][1] * self.img_size,
                                               linewidth=1, edgecolor='r', facecolor='none'))
                 plt.text(boxes[i][0] * self.img_size - 10, boxes[i][1] * self.img_size - 10,
-                         str(self.class_dict2[labels[i].item()]),
+                         str(self.class_dict_inv[labels[i].item()]),
                          bbox=dict(boxstyle='round4', color='grey'))
 
             plt.show()
         if self.split == "TEST":
-            return image, boxes, labels, difficulties, additional_info
+            return image, boxes, labels, difficulties, img_name, additional_info  # for evaluations
 
         return image, boxes, labels, difficulties
 
@@ -102,12 +103,12 @@ class VOC_Dataset(data.Dataset):
 
         for obj in root.iter("object"):
 
-            # 'name' tag 에서 멈추기
+            # stop 'name' tag
             name = obj.find('./name')
             class_name = name.text.lower().strip()
             labels.append(self.class_dict[class_name])
 
-            # bbox tag 에서 멈추기
+            # stop to bbox tag
             bbox = obj.find('./bndbox')
             x_min = bbox.find('./xmin')
             y_min = bbox.find('./ymin')
@@ -132,11 +133,13 @@ class VOC_Dataset(data.Dataset):
     def collate_fn(self, batch):
         """
         :param batch: an iterable of N sets from __getitem__()
-        :return: a tensor of images, lists of varying-size tensors of bounding boxes, labels, and difficulties
+        :return: a tensor of images, lists of varying-size tensors of bounding boxes, labels, difficulties, img_name and
+        additional_info
         """
         images = list()
         boxes = list()
         labels = list()
+        img_name = list()
         difficulties = list()
         if self.split == "TEST":
             additional_info = list()
@@ -147,17 +150,16 @@ class VOC_Dataset(data.Dataset):
             labels.append(b[2])
             difficulties.append(b[3])
             if self.split == "TEST":
-                additional_info.append(b[4])
+                img_name.append(b[4])
+                additional_info.append(b[5])
 
         images = torch.stack(images, dim=0)
         if self.split == "TEST":
-            return images, boxes, labels, difficulties, additional_info
+            return images, boxes, labels, difficulties, img_name, additional_info
         return images, boxes, labels, difficulties
 
 
 if __name__ == "__main__":
-
-    # train_transform
 
     train_set = VOC_Dataset("D:\Data\VOC_ROOT\TRAIN", split='TRAIN')
     train_loader = torch.utils.data.DataLoader(train_set,

@@ -6,20 +6,22 @@ import os
 import glob
 import cv2
 import time
-from utils import make_pred_bbox, voc_labels_array, device
+from utils import make_pred_bbox, voc_labels_array, device, color_array
+import argparse
 
 
 def save_det_txt_for_mAP(file_name, bbox, cls, score):
+    # type : (string, Tensor, list, Tensor )
     '''
-    file name 을 mAP 에 넣을 수 있도록 만드는 부분
-    :param file_name:
-    :param bbox:
-    :param cls:
-    :param score:
-    :return:
+    to save filename.txt to use input of https://github.com/Cartucho/mAP python evaluation codes.
+    :param file_name: file name
+    :param bbox: bbox tensor [num_obj, 4]
+    :param cls: class list [num_obj]
+    :param score: score tensor [num_obj]
+    :return: None
     '''
 
-    # score = score[0]
+    # score = score[0] # not batch results
     if not os.path.isdir('./pred'):
         os.mkdir('./pred')
     f = open(os.path.join("./pred", file_name + '.txt'), 'w')
@@ -38,12 +40,16 @@ def save_det_txt_for_mAP(file_name, bbox, cls, score):
 
 
 def demo(original_image, model, conf_thres):
+    # type : (PIL Image, nn.Module, float)
     """
-
-    :param original_image:
-    :param model:
-    :param conf_thres:
-    :return:
+    to demo detection output using our models
+    :param original_image: input image for detecting
+    :param model: our yolo v2 vgg 16
+    :param conf_thres: above conf score, detector detect by scores.
+    :return: det_boxes - detected bbox
+             det_labels - detected labels
+             scores - detected bbox's scores
+             detection_time - detection time for inference
     """
 
     # Transform
@@ -76,11 +82,22 @@ def demo(original_image, model, conf_thres):
 
 if __name__ == '__main__':
 
-    visualization = False
-    epoch = 99
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--demo_img_path', type=str, default='D:\Data\VOC_ROOT\TEST\VOC2007\JPEGImages')
+    parser.add_argument('--demo_img_type', type=str, default='jpg')
+    parser.add_argument('--visualization', type=bool, default=True)
+    parser.add_argument('--epoch', type=int, default=149)
+    parser.add_argument('--save_path', type=str, default='./saves')
+    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
+    parser.add_argument('--conf_thres', type=float, default=0.35)
+    demo_opts = parser.parse_args()
+    print(demo_opts)
+
+    visualization = demo_opts.visualization
+    epoch = demo_opts.epoch
 
     model = YOLO_VGG_16().to(device)
-    checkpoint = torch.load(os.path.join('./saves', 'yolo_v2_vgg_16') + '.{}.pth.tar'.format(epoch))
+    checkpoint = torch.load(os.path.join(demo_opts.save_path, demo_opts.save_file_name) + '.{}.pth.tar'.format(epoch))
     model.load_state_dict(checkpoint['model_state_dict'])
 
     model = model.to(device)
@@ -93,8 +110,8 @@ if __name__ == '__main__':
                                      std=[0.229, 0.224, 0.225])
 
     # test root - put your demo folder and types
-    img_path = 'D:\Data\VOC_ROOT\TEST\VOC2007\JPEGImages'
-    img_paths = glob.glob(os.path.join(img_path, '*.jpg'))
+    img_path = demo_opts.demo_img_path
+    img_paths = glob.glob(os.path.join(img_path, '*.' + demo_opts.demo_img_type))
 
     tic = time.time()
     total_time = 0
@@ -105,7 +122,7 @@ if __name__ == '__main__':
 
             # for each a image, outputs are boxes and labels.
             img = Image.open(img_path, mode='r').convert('RGB')
-            boxes, labels, scores, det_time = demo(img, model=model, conf_thres=0.01)
+            boxes, labels, scores, det_time = demo(img, model=model, conf_thres=demo_opts.conf_thres)
 
             name = os.path.basename(img_path).split('.')[0]  # .replace('.jpg', '.txt')
             save_det_txt_for_mAP(file_name=name, bbox=boxes, cls=labels, score=scores)
@@ -117,19 +134,32 @@ if __name__ == '__main__':
 
             if visualization:
                 img = cv2.imread(img_path)
-                scores = scores[0]  # score is list of tensors
                 for i in range(len(boxes)):
+
+                    x_min = boxes[i][0]
+                    y_min = boxes[i][1]
+                    x_max = boxes[i][2]
+                    y_max = boxes[i][3]
+
                     cv2.rectangle(img,
-                                  pt1=(boxes[i][0], boxes[i][1]),
-                                  pt2=(boxes[i][2], boxes[i][3]),
-                                  color=(0, 0, 255),
+                                  pt1=(x_min, y_min),
+                                  pt2=(x_max, y_max),
+                                  color=color_array[voc_labels_array.index(labels[i])],
                                   thickness=2)
 
+                    # text_size
+                    text_size = cv2.getTextSize(labels[i] + ' {:.4f}'.format(scores[i].item()), cv2.FONT_HERSHEY_PLAIN,
+                                                1, 1)[0]
+                    # text_rec
+                    cv2.rectangle(img, (x_min, y_min), (x_min + text_size[0] + 3, y_min + text_size[1] + 4),
+                                  color_array[voc_labels_array.index(labels[i])], -1)
+
+                    # put text
                     cv2.putText(img,
-                                text=labels[i],
+                                text=labels[i] + ' {:.4f}'.format(scores[i].item()),
                                 org=(boxes[i][0] + 10, boxes[i][1] + 10),
-                                fontFace=0, fontScale=0.7,
-                                color=(255, 255, 0))
+                                fontFace=0, fontScale=0.4,
+                                color=(255, 255, 255))
 
                 cv2.imshow('input', img)
                 cv2.waitKey(0)

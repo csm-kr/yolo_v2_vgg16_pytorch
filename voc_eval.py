@@ -30,13 +30,14 @@ def save_gt(xml_file, cache_dir, classes, gt_counter_per_class):
     """
 
     :param xml_file:
-    :param temp_dir:
+    :param cache_dir:
     :param classes: class
+    :param gt_counter_per_class:
     :return:
     """
     objects = parse_voc(xml_file)
-    gt_name = os.path.basename(xml_file).split('.')[0]  # 이름만 뽑아오는 부분
-    obj_dicts = []                                      # json 에 들어갈 내용
+    gt_name = os.path.basename(xml_file).split('.')[0]  # only omit name
+    obj_dicts = []                                      # json's body
     for obj in objects:
         class_name = obj['name']
         bbox = str(obj['bbox'][0]) + " " + str(obj['bbox'][1]) + " " + str(obj['bbox'][2]) + " " + str(obj['bbox'][3])
@@ -56,38 +57,46 @@ def save_gt(xml_file, cache_dir, classes, gt_counter_per_class):
 
         obj_dicts.append({"class_name": class_name, "bbox": bbox, "used": False, "difficult": difficult})
 
-    # .json 저장하는 부분
+    # save .json
     new_temp_file = cache_dir + "/" + gt_name + "_ground_truth.json"
     with open(new_temp_file, 'w') as outfile:
         json.dump(obj_dicts, outfile)
     return classes, gt_counter_per_class
 
 
-def save_pred(additional, bboxes, scores, classes, class_name, gt_classes, cache_dir):
+def save_pred(img_names, additional, bboxes, scores, classes, class_name, gt_classes, cache_dir):
     """
 
-    :param add: img_name, img_width, img_height
+    :param img_names: list of 2nd dimensional tensor [[1, num_name_strings]]
+    :param add:
     :param box:
-    :param score:
-    :param class_:
+    :param scores:
+    :param classes:
+    :param class_name:
+    :param gt_classes:
+    :param cache_dir:
     :return:
     """
 
     preds_dicts = []
-    for (add, obj_boxes, obj_scores, obj_class) in zip(additional, bboxes, scores, classes):
-        img_name = add[0]
-        img_width = add[1]
-        img_height = add[2]
+    for (img_name_ascii, add, obj_boxes, obj_scores, obj_class) in zip(img_names, additional, bboxes, scores, classes):
 
-        # 1. 이름을 string 으로 바꾸어라
-        img_name = str(int(img_name.item())).zfill(6)
+        img_name_ascii = img_name_ascii[0]
+        img_name_ascii = img_name_ascii.numpy()
+        img_name_from_ascii = [chr(c) for c in img_name_ascii]
+        img_width = add[0]
+        img_height = add[1]
 
-        # 2. width, height 로 bbox 를 변형하라
+        # 1. convert from ascii int name to string
+        img_name = ''.join(img_name_from_ascii)
+
+        # 2. assign predion bbox to origin width, height
         origin_wh = torch.FloatTensor([img_width, img_height, img_width, img_height]).unsqueeze(0)  # [1  , 4]
         obj_boxes = obj_boxes * origin_wh                                                           # [obj, 4]
 
         for (box, score, class_) in zip(obj_boxes, obj_scores, obj_class):
-            # obj 개
+
+            # for loop num_obj
             bbox = str(box[0].item()) + " " + str(box[1].item()) + " " + str(box[2].item()) + " " + str(box[3].item())
             confidence = str(score.item())  # [1]
 
@@ -98,7 +107,7 @@ def save_pred(additional, bboxes, scores, classes, class_name, gt_classes, cache
             if class_name == gt_classes[int(class_.item())]:
                 preds_dicts.append({"confidence": confidence, "file_id": img_name, "bbox": bbox})
 
-        # .json 저장하는 부분
+        # save .json
     preds_dicts.sort(key=lambda x: float(x['confidence']), reverse=True)
     new_temp_file = cache_dir + "/" + class_name + "_dr.json"
     with open(new_temp_file, 'w') as outfile:
@@ -206,8 +215,10 @@ def cal_mAP(cache_dir, gt_classes, gt_counter_per_class, MINOVERLAP=0.5):
 
         prec = tp[:]
         for idx, val in enumerate(tp):
+
             # if (fp[idx] + tp[idx]) == 0:
             #     prec[idx] = 0
+
             # avoid divide by zero in case the first detection matches a difficult
             prec[idx] = float(tp[idx]) / np.maximum((fp[idx] + tp[idx]), np.finfo(np.float64).eps)
 
@@ -221,10 +232,16 @@ def cal_mAP(cache_dir, gt_classes, gt_counter_per_class, MINOVERLAP=0.5):
 
 
 def voc_eval(test_xml_path="D:\Data\VOC_ROOT\TEST\VOC2007\Annotations",
+             img_names=None,
              additional=None, bboxes=None, scores=None, classes=None):
     """
 
     :param test_xml_path: annotation path
+    :param img_names: annotation path
+    :param additional: annotation path
+    :param bboxes: annotation path
+    :param scores: annotation path
+    :param classes: annotation path
     :return:
     """
     print("start..evaluation")
@@ -251,7 +268,7 @@ def voc_eval(test_xml_path="D:\Data\VOC_ROOT\TEST\VOC2007\Annotations",
 
     # 3. save_pred
     for class_index, class_name in enumerate(gt_classes):
-        save_pred(additional, bboxes, scores, classes, class_name, gt_classes, cache_dir)
+        save_pred(img_names, additional, bboxes, scores, classes, class_name, gt_classes, cache_dir)
 
     # 4. calculate mAP
     map = cal_mAP(cache_dir, gt_classes, gt_counter_per_class, 0.5)

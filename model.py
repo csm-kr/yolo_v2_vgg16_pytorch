@@ -78,7 +78,6 @@ class YOLO_VGG_16(nn.Module):
 
 if __name__ == '__main__':
     model = YOLO_VGG_16().cuda()
-    # model = nn.Sequential(*list(vgg16_bn(pretrained=True).features.children())[:-1]).cuda()
     print(model)
     image = torch.randn([1, 3, 416, 416]).cuda()
     print(model(image).size())

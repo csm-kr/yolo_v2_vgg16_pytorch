@@ -5,7 +5,7 @@ from utils import make_pred_bbox, voc_labels_array
 from voc_eval import voc_eval
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
-
+import argparse
 # --- for test
 from dataset.voc_dataset import VOC_Dataset
 from loss import Yolo_Loss
@@ -22,6 +22,8 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
     model.load_state_dict(state_dict)
 
     visualization = False
+
+    det_img_name = list()
     det_additional = list()
     det_boxes = list()
     det_labels = list()
@@ -30,7 +32,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
     tic = time.time()
     with torch.no_grad():
 
-        for idx, (images, boxes, labels, difficulties, additional_info) in enumerate(test_loader):
+        for idx, (images, boxes, labels, difficulties, img_names, additional_info) in enumerate(test_loader):
             # ---------- cuda ----------
             images = images.to(device)
             boxes = [b.to(device) for b in boxes]
@@ -43,35 +45,31 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
             loss, _ = criterion(preds, boxes, labels)
             # ---------- eval ----------
             if eval:
-                bbox, cls, scores = make_pred_bbox(preds=preds, conf_threshold=conf_thres)  # 가장큰 네모 1개 뽑기
+                bbox, cls, scores = make_pred_bbox(preds=preds, conf_threshold=conf_thres)
 
-                # bbox 가 검출이 되지 않으면 그냥 넘어간다.
-                # if bbox.size(0) == 1:
-                #     # print(idx, " continues")
-                #     continue
-
+                det_img_name.append(img_names[0])
                 det_additional.append(additional_info[0])
+
                 det_boxes.append(bbox)
                 det_labels.append(cls)
                 det_scores.append(scores)
                 # print(bbox)
 
                 if visualization:
-
-                    # --- visualization ---
                     # 0. permute
                     images = images.cpu()
                     images = images.squeeze(0).permute(1, 2, 0)  # B, C, H, W --> H, W, C
+
                     # 1. un normalization
                     images *= torch.Tensor([0.229, 0.224, 0.225])
                     images += torch.Tensor([0.485, 0.456, 0.406])
+
                     # 2. RGB to BGR
                     image_np = images.numpy()
-                    # image_np = image_np[:, :, ::-1]
 
+                    # 3. box scaling
                     bbox *= 416
 
-                    # predicted bbox visualization
                     plt.figure('result')
                     plt.imshow(image_np)
 
@@ -101,7 +99,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
                               idx, len(test_loader),
                               time=toc))
 
-        mAP = voc_eval("D:\Data\VOC_ROOT\TEST\VOC2007\Annotations", det_additional, det_boxes, det_scores, det_labels)
+        mAP = voc_eval("D:\Data\VOC_ROOT\TEST\VOC2007\Annotations", det_img_name, det_additional, det_boxes, det_scores, det_labels)
 
         if vis is not None:
             # loss plot
@@ -117,10 +115,20 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
 
 if __name__ == "__main__":
 
-    # 1. epoch
-    epoch = 99
+    # 1. argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--test_epoch', type=int, default=149)
+    parser.add_argument('--save_path', type=str, default='./saves')
+    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
+    parser.add_argument('--conf_thres', type=float, default=0.01)
+    test_opts = parser.parse_args()
+    print(test_opts)
+
+    epoch = test_opts.test_epoch
+
     # 2. device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
     # 3. visdom
     vis = None
 
@@ -142,10 +150,10 @@ if __name__ == "__main__":
          test_loader=test_loader,
          model=model,
          criterion=criterion,
-         save_path='./saves',
-         save_file_name='yolo_v2_vgg_16',
+         save_path=test_opts.save_path,
+         save_file_name=test_opts.save_file_name,
          eval=True,
-         conf_thres=0.01)
+         conf_thres=test_opts.conf_thres)
 
 
 

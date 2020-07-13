@@ -7,7 +7,6 @@ def make_center_anchors(anchors_wh, grid_size=13):
     grid_arange = np.arange(grid_size)
     xx, yy = np.meshgrid(grid_arange, grid_arange)  # + 0.5  # grid center, [fmsize*fmsize,2]
     m_grid = np.concatenate([np.expand_dims(xx, axis=-1), np.expand_dims(yy, -1)], axis=-1) + 0.5
-    # print(m_grid)
     m_grid = m_grid
     xy = torch.from_numpy(m_grid)
 
@@ -18,6 +17,7 @@ def make_center_anchors(anchors_wh, grid_size=13):
     wh = wh.view(1, 1, 5, 2).expand(grid_size, grid_size, 5, 2).type(torch.float32)  # w, h
     center_anchors = torch.cat([xy, wh], dim=3).cuda()
     # cy cx w h
+
     """
     center_anchors[0][0]
     tensor([[ 0.5000,  0.5000,  1.3221,  1.7314],
@@ -42,5 +42,6 @@ def make_center_anchors(anchors_wh, grid_size=13):
     
     pytorch view has reverse index
     """
+
     return center_anchors
 

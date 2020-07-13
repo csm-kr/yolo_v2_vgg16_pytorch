@@ -7,6 +7,9 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 voc_labels_array = ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable',
                     'dog', 'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor', 'background']
 
+color_array = [(0, 136, 221), (100, 56, 31), (155, 27, 31), (30, 236, 215), (221, 136, 89), (150, 222, 111), (113, 76, 121),
+               (47, 77, 33), (159, 176, 11), (57, 86, 17), (66, 76, 151), (117, 85, 28), (62, 147, 75), (119, 85, 82),
+               (89, 55, 99), (59, 216, 15), (99, 75, 211), (172, 177, 200), (180, 130, 124), (98, 56, 127), (120, 199, 100)]
 
 def center_to_corner(cxcy):
 
@@ -61,44 +64,17 @@ def find_intersection(set_1, set_2):
     return intersection_dims[:, :, 0] * intersection_dims[:, :, 1]  # (n1, n2)  # 둘다 양수인 부분만 존재하게됨!
 
 
-def nms(boxes, scores, iou_threshold=0.5, top_k=200):
-
-    # 1. num obj
-    num_boxes = len(boxes)
-
-    # 2. get sorted scores, boxes
-    sorted_scores, idx_scores = scores.sort(descending=True)
-    sorted_boxes = boxes[idx_scores]
-
-    # 3. iou
-    iou = find_jaccard_overlap(sorted_boxes, sorted_boxes)
-    keep = torch.ones(num_boxes, dtype=torch.bool)
-
-    # 4. suppress boxes except max boxes
-    for each_box_idx, iou_for_each_box in enumerate(iou):
-        if keep[each_box_idx] == 0:  # 이미 없는것
-            continue
-
-        # 압축조건
-        suppress = iou_for_each_box > iou_threshold  # 없앨 아이들
-        keep[suppress] = 0
-        keep[each_box_idx] = 1  # 자기자신은 살린당.
-
-    return keep, sorted_scores, sorted_boxes
-
-
 def make_pred_bbox(preds, conf_threshold=0.35):
+    """
+
+    """
 
     pred_targets = preds.view(-1, 13, 13, 5, 5 + 20)
     pred_xy = pred_targets[..., :2].sigmoid()  # sigmoid(tx ty)  0, 1
     pred_wh = pred_targets[..., 2:4].exp()  # 2, 3
 
-    # pred_xy = 1 / (1 + torch.exp(-1 / 3 * pred_targets[..., :2]))
-    # pred_wh = torch.FloatTensor([3]).exp().cuda() / (1 + torch.exp(-1 * pred_targets[..., 2:4] + 3))
-
     pred_conf = pred_targets[..., 4].sigmoid()  # 4
     pred_cls = pred_targets[..., 5:]  # 20
-    # print(pred_xy)
 
     # pred_bbox
     anchors_wh = [(1.3221, 1.73145), (3.19275, 4.00944), (5.05587, 8.09892), (9.47112, 4.84053), (11.2364, 10.0071)]
@@ -109,7 +85,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
     anchors_xy = cxcy_anchors[..., :2]  # torch.Size([13, 13, 5, 2])
     anchors_wh = cxcy_anchors[..., 2:]  # torch.Size([13, 13, 5, 2])
 
-    pred_bbox_xy = anchors_xy.floor().expand_as(pred_xy) + pred_xy  # torch.Size([B, 13, 13, 5, 2])  # *********************************** 여기도 0.5 것을 넣어버렸다!!!!!!!!!!!
+    pred_bbox_xy = anchors_xy.floor().expand_as(pred_xy) + pred_xy  # torch.Size([B, 13, 13, 5, 2])  # floor() is very
     pred_bbox_wh = anchors_wh.expand_as(pred_wh) * pred_wh
     pred_bbox = torch.cat([pred_bbox_xy, pred_bbox_wh], dim=-1)  # torch.Size([B, 13, 13, 5, 4])
     pred_bbox = pred_bbox.view(-1, 13 * 13 * 5, 4) / 13.  # rescale 0~1   # [B, 845, 4]  # center_coord.
@@ -125,7 +101,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
         class_scores = pred_cls[..., c]
         class_scores = class_scores * pred_conf
 
-        idx = class_scores > conf_threshold                               # 0.35? 0.001?
+        idx = class_scores > conf_threshold                               # 0.01 for evaluation
         if idx.sum() == 0:
             continue
 
@@ -157,7 +133,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
     image_scores = torch.cat(image_scores, dim=0)  # (n_objects)
     n_objects = image_scores.size(0)
 
-    # Keep only the top k objects --> 다구하고 200 개를 자르는 것은 느리지 않은가?
+    # Keep only the top k objects
     top_k = 200
     if n_objects > top_k:
         image_scores, sort_ind = image_scores.sort(dim=0, descending=True)
