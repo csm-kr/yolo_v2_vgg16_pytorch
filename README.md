@@ -1,18 +1,14 @@
 # yolo v2 vgg16 pytorch
 
-re-implementation of yolo v2 detection using torchvision vgg16 bn model.
+:octocat: re-implementation of yolo v2 detection using torchvision vgg16 bn model.
 
 ### Intoduction
 
-:octocat:
-
 A pytorch implementation of vgg16 version of yolo v2 described in **YOLO9000: Better, Faster, Stronger**  [paper](https://arxiv.org/abs/1612.08242) by Joseph Redmon, Ali Farhadi.
-
-The goal of this repo. is to re-implement famous one-stage object detection using torchvision models. 
+The goal of this repo. is to re-implement a famous one-stage object detection, yolo v2 using torchvision models. 
 
 ### Requirements
 
-this repo. is 
 - Python 3.7
 - Pytorch 1.5.0
 - visdom
