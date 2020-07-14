@@ -62,8 +62,8 @@ def find_intersection(set_1, set_2):
     # PyTorch auto-broadcasts singleton dimensions
     lower_bounds = torch.max(set_1[:, :2].unsqueeze(1), set_2[:, :2].unsqueeze(0))  # (n1, n2, 2)
     upper_bounds = torch.min(set_1[:, 2:].unsqueeze(1), set_2[:, 2:].unsqueeze(0))  # (n1, n2, 2)
-    intersection_dims = torch.clamp(upper_bounds - lower_bounds, min=0)  # (n1, n2, 2)  # 0 혹은 양수로 만드는 부분
-    return intersection_dims[:, :, 0] * intersection_dims[:, :, 1]  # (n1, n2)  # 둘다 양수인 부분만 존재하게됨!
+    intersection_dims = torch.clamp(upper_bounds - lower_bounds, min=0)  # (n1, n2, 2)  # make 0 or positive part
+    return intersection_dims[:, :, 0] * intersection_dims[:, :, 1]  # (n1, n2)  # leave both positive parts!
 
 
 def make_pred_bbox(preds, conf_threshold=0.35):
@@ -98,7 +98,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
     image_labels = list()
     image_scores = list()
 
-    # class 별로
+    # per class
     for c in range(20):
         class_scores = pred_cls[..., c]
         class_scores = class_scores * pred_conf
@@ -120,7 +120,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
         keep_[keep_idx] = 1  # int64 to bool
         keep = keep_
 
-        image_boxes.append(sorted_boxes[keep])       # corner coord 로 바꾸고 0~1 로 바꿈
+        image_boxes.append(sorted_boxes[keep])       # convert to corner coord ans scale 0~1
         image_labels.append(torch.LongTensor((keep).sum().item() * [c]).to(device))
         image_scores.append(sorted_scores[keep])
 

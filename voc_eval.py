@@ -195,7 +195,7 @@ def cal_mAP(cache_dir, gt_classes, gt_counter_per_class, MINOVERLAP=0.5):
                         count_true_positives[class_name] += 1
                         # update the ".json" file
                         with open(gt_file, 'w') as f:
-                            f.write(json.dumps(ground_truth_data))  # "used" 바꾸는 부분
+                            f.write(json.dumps(ground_truth_data))  # change "used" json components
                     else:
                         fp[idx] = 1  # false positive
             else:

@@ -58,8 +58,8 @@ class Yolo_Loss(nn.Module):
                 cy = int(cy)
 
                 _, max_idx = iou_anchors_gt[cy, cx, :, n_obj].max(0)  # which anchor has maximum iou?
-                j = max_idx  # 얘는 idx 이다.
-                # # j 번째 anchor
+                j = max_idx  # j is idx.
+                # # j-th anchor
                 resp_mask[b, cy, cx, j] = 1
                 gt_xy[b, cy, cx, j, :] = txty[n_obj]
                 twth = bwbh[n_obj] / torch.FloatTensor(self.anchors[j]).cuda()   # ratio
