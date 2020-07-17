@@ -16,6 +16,16 @@ The goal of this repo. is to re-implement a famous one-stage object detection, y
 - cv2
 - matplotlib
 
+### Quick start detection 
+
+1\. download model weight from https://drive.google.com/file/d/1cOadYYkwXKzAf7YGYokEAEn1ofzx4QDX/view?usp=sharing move into ./saves
+
+2\. prefare PATH that contains the image you want to detect  -- PATH (e.g. 'D:\image_path')
+
+3\. check the TYPE of image.  -- TYPE (e.g. 'jpg')
+
+4\. Enter tne command : **python demo.py --demo_img_path PATH --demo_img_type TYPE**
+
 ### Results
 
 |methods        | Traning Dataset              | Testing Dataset | Resolution | mAP     | Fps |
