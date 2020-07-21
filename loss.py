@@ -44,7 +44,7 @@ class Yolo_Loss(nn.Module):
             center_gt_box_13 = center_gt_box * float(out_size)
 
             bxby = center_gt_box_13[..., :2]  # [# obj, 2]
-            txty = bxby - bxby.floor()        # [# obj, 2], 0~1 scale
+            x_y_ = bxby - bxby.floor()        # [# obj, 2], 0~1 scale
             bwbh = center_gt_box_13[..., 2:]
 
             iou_anchors_gt = find_jaccard_overlap(corner_anchors, corner_gt_box_13)  # [845, # obj]
@@ -61,9 +61,9 @@ class Yolo_Loss(nn.Module):
                 j = max_idx  # j is idx.
                 # # j-th anchor
                 resp_mask[b, cy, cx, j] = 1
-                gt_xy[b, cy, cx, j, :] = txty[n_obj]
-                twth = bwbh[n_obj] / torch.FloatTensor(self.anchors[j]).cuda()   # ratio
-                gt_wh[b, cy, cx, j, :] = twth
+                gt_xy[b, cy, cx, j, :] = x_y_[n_obj]
+                w_h_ = bwbh[n_obj] / torch.FloatTensor(self.anchors[j]).cuda()   # ratio
+                gt_wh[b, cy, cx, j, :] = w_h_
                 gt_cls[b, cy, cx, j, int(label[n_obj].item()) - 1] = 1
 
             pred_xy_ = pred_xy[b]
