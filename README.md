@@ -76,7 +76,7 @@ Unlike the existing yolo v2, the backbone uses vgg instead of darknet 19, and th
 
 ![model](https://user-images.githubusercontent.com/18729104/87281786-8a703b80-c52e-11ea-9f1f-3bb1d3d23a58.JPG)
 
-![yolo_v2_network](https://user-images.githubusercontent.com/18729104/88192344-6079f000-cc77-11ea-8b2a-7436d72daedc.png)
+![yolo_vgg_network](https://user-images.githubusercontent.com/18729104/88194954-645b4180-cc7a-11ea-9ee6-ed549d3f2a20.png)
 
 - ##### Loss
 
