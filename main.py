@@ -15,14 +15,14 @@ from test import test
 def main():
     # 1. argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--epochs', type=int, default=150)
-    parser.add_argument('--lr', type=float, default=1e-4)
+    parser.add_argument('--epochs', type=int, default=200)
+    parser.add_argument('--lr', type=float, default=1e-5)
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--num_workers', type=int, default=2)
     parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
     parser.add_argument('--conf_thres', type=float, default=0.01)
     parser.add_argument('--save_path', type=str, default='./saves')
-    parser.add_argument('--start_epoch', type=int, default=0)  # to resume
+    parser.add_argument('--start_epoch', type=int, default=150)  # to resume
 
     opts = parser.parse_args()
     print(opts)
@@ -71,7 +71,7 @@ def main():
         checkpoint = torch.load(os.path.join(opts.save_path, opts.save_file_name) + '.{}.pth.tar'
                                 .format(opts.start_epoch - 1))          # train
         model.load_state_dict(checkpoint['model_state_dict'])           # load model state dict
-        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])    # load optim state dict
+        # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])    # load optim state dict
         if scheduler is not None:
             scheduler.load_state_dict(checkpoint['scheduler_state_dict'])    # load sched state dict
         print('\nLoaded checkpoint from epoch %d.\n' % (int(opts.start_epoch) - 1))

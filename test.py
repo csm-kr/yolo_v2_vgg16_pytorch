@@ -19,7 +19,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
     model.eval()
     check_point = torch.load(os.path.join(save_path, save_file_name) + '.{}.pth.tar'.format(epoch))
     state_dict = check_point['model_state_dict']
-    model.load_state_dict(state_dict)
+    model.load_state_dict(state_dict, strict=True)
 
     visualization = False
 

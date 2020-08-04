@@ -86,7 +86,7 @@ if __name__ == '__main__':
     parser.add_argument('--demo_img_path', type=str, default='D:\Data\VOC_ROOT\TEST\VOC2007\JPEGImages')
     parser.add_argument('--demo_img_type', type=str, default='jpg')
     parser.add_argument('--visualization', type=bool, default=True)
-    parser.add_argument('--epoch', type=int, default=149)
+    parser.add_argument('--epoch', type=int, default=199)
     parser.add_argument('--save_path', type=str, default='./saves')
     parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
     parser.add_argument('--conf_thres', type=float, default=0.35)
@@ -144,7 +144,7 @@ if __name__ == '__main__':
                     cv2.rectangle(img,
                                   pt1=(x_min, y_min),
                                   pt2=(x_max, y_max),
-                                  color=color_array[voc_labels_array.index(labels[i])],
+                                  color=color_array[voc_labels_array.index(labels[i])].tolist(),
                                   thickness=2)
 
                     # text_size
@@ -152,7 +152,7 @@ if __name__ == '__main__':
                                                 1, 1)[0]
                     # text_rec
                     cv2.rectangle(img, (x_min, y_min), (x_min + text_size[0] + 3, y_min + text_size[1] + 4),
-                                  color_array[voc_labels_array.index(labels[i])], -1)
+                                  color_array[voc_labels_array.index(labels[i])].tolist(), -1)
 
                     # put text
                     cv2.putText(img,

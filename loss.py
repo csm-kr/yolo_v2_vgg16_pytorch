@@ -28,7 +28,7 @@ class Yolo_Loss(nn.Module):
         gt_xy = torch.zeros([batch_size, out_size, out_size, 5, 2])
         gt_wh = torch.zeros([batch_size, out_size, out_size, 5, 2])
         gt_conf = torch.zeros([batch_size, out_size, out_size, 5])
-        gt_cls = torch.zeros([batch_size, out_size, out_size, 5, 20])
+        gt_cls = torch.zeros([batch_size, out_size, out_size, 5, self.num_classes])
 
         center_anchors = make_center_anchors(anchors_wh=self.anchors, grid_size=out_size)
         corner_anchors = center_to_corner(center_anchors).view(out_size * out_size * 5, 4)
@@ -89,7 +89,7 @@ class Yolo_Loss(nn.Module):
         :return:
         """
         out_size = pred_targets.size(1)
-        pred_targets = pred_targets.view(-1, out_size, out_size, 5, 5 + 20)
+        pred_targets = pred_targets.view(-1, out_size, out_size, 5, 5 + self.num_classes)
         pred_xy = pred_targets[..., :2].sigmoid()                  # sigmoid(tx ty)  0, 1
         pred_wh = pred_targets[..., 2:4].exp()                     # 2, 3
         pred_conf = pred_targets[..., 4].sigmoid()                 # 4
