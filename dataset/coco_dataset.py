@@ -17,7 +17,7 @@ from matplotlib.patches import Rectangle
 class COCO_Dataset(Dataset):
     """Coco dataset."""
 
-    def __init__(self, root_dir='D:\Data\coco', set_name='train2017', transform=None):
+    def __init__(self, root_dir='D:\Data\coco', set_name='train2017', split='TRAIN'):
 
         """
         Args:
@@ -39,8 +39,6 @@ class COCO_Dataset(Dataset):
         super().__init__()
         self.root_dir = root_dir
         self.set_name = set_name
-        self.transform = transform
-
         self.coco = COCO(os.path.join(self.root_dir, 'annotations', 'instances_' + self.set_name + '.json'))
 
         whole_image_ids = self.coco.getImgIds()  # original length of train2017 is 118287
@@ -58,7 +56,7 @@ class COCO_Dataset(Dataset):
         # so 118287 - 117266 = 1021
 
         self.load_classes()
-        self.split = 'TEST'
+        self.split = split
 
     def load_classes(self):
         # load class names (name -> label)

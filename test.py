@@ -1,7 +1,7 @@
 import os
 import torch
 import time
-from utils import make_pred_bbox, voc_labels_array
+from utils import make_pred_bbox, voc_labels_array, make_pred_bbox_for_COCO
 from voc_eval import voc_eval
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
@@ -32,7 +32,28 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
     tic = time.time()
     with torch.no_grad():
 
-        for idx, (images, boxes, labels, difficulties, img_names, additional_info) in enumerate(test_loader):
+        # for COCO evaluation
+        results = []
+        image_ids = []
+
+        for idx, datas in enumerate(test_loader):
+            '''
+            + VOC dataset
+            for VOC datasets, datas including follows:
+            (images, boxes, labels, difficulties, img_names, additional_info)
+            
+            + COCO dataset
+            but COCO dataset, (images, boxes, labels)
+            '''
+            images = datas[0]
+            boxes = datas[1]
+            labels = datas[2]
+            difficulties = datas[3]
+            img_names = datas[4]
+            additional_info = datas[5]
+
+            # (images, boxes, labels, difficulties, img_names, additional_info)
+
             # ---------- cuda ----------
             images = images.to(device)
             boxes = [b.to(device) for b in boxes]
@@ -46,6 +67,9 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
             # ---------- eval ----------
             if eval:
                 bbox, cls, scores = make_pred_bbox(preds=preds, conf_threshold=conf_thres)
+
+                # coco
+                boxes, classes, scores = make_pred_bbox_for_COCO(preds, conf_threshold=conf_thres)
 
                 det_img_name.append(img_names[0])
                 det_additional.append(additional_info[0])

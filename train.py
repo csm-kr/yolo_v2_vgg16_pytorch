@@ -35,7 +35,7 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
             lr = param_group['lr']
 
         # for each steps
-        if idx % 10 == 0:
+        if idx % 100 == 0:
             print('Epoch: [{0}]\t'
                   'Step: [{1}/{2}]\t'
                   'Loss: {loss:.4f}\t'

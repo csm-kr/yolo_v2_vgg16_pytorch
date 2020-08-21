@@ -113,9 +113,8 @@ class Yolo_Loss(nn.Module):
         # 5. classification loss
         pred_cls = F.softmax(pred_cls, dim=-1)  # [N*13*13*5,20]
         resp_cell = resp_mask.max(-1)[0].unsqueeze(-1).unsqueeze(-1).expand_as(gt_cls)  # [B, 13, 13, 5, 20]
-        cls_loss = resp_cell * (gt_cls - pred_cls.cpu()) ** 2       # original code
-
-        # cls_loss = resp_cell * (gt_cls * -1 * torch.log(pred_cls.cpu()))
+        # cls_loss = resp_cell * (gt_cls - pred_cls.cpu()) ** 2       # original code
+        cls_loss = resp_cell * (gt_cls * -1 * torch.log(pred_cls.cpu()))
 
         # ------------------------------- focal loss -----------------------------------
         # 6. focal loss

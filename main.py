@@ -10,7 +10,7 @@ from loss import Yolo_Loss
 import os
 from torch.optim.lr_scheduler import StepLR
 from train import train
-from test import test
+from test_for_coco import test
 
 
 def main():
@@ -23,9 +23,11 @@ def main():
     parser.add_argument('--save_file_name', type=str, default='yolo_vgg_16')
     parser.add_argument('--conf_thres', type=float, default=0.01)
     parser.add_argument('--save_path', type=str, default='./saves')
-    parser.add_argument('--start_epoch', type=int, default=0)  # to resume
+
     parser.add_argument('--num_classes', type=int, default=80)
     parser.add_argument('--dataset_type', type=str, default='coco', help='which dataset you want to use VOC or COCO')
+
+    parser.add_argument('--start_epoch', type=int, default=0)  # to resume
     opts = parser.parse_args()
     print(opts)
 
@@ -40,8 +42,8 @@ def main():
         train_set = VOC_Dataset(root="D:\Data\VOC_ROOT", split='TRAIN')
         test_set = VOC_Dataset(root="D:\Data\VOC_ROOT", split='TEST')
     elif opts.dataset_type == 'coco':
-        train_set = COCO_Dataset()
-        test_set = COCO_Dataset()
+        train_set = COCO_Dataset(set_name='train2017')
+        test_set = COCO_Dataset(set_name='val2017', split='TEST')
 
     # 5. dataloader
     train_loader = DataLoader(dataset=train_set,
@@ -104,16 +106,16 @@ def main():
             scheduler.step()
 
         # 12. test
-        # test(epoch=epoch,
-        #      device=device,
-        #      vis=vis,
-        #      test_loader=test_loader,
-        #      model=model,
-        #      criterion=criterion,
-        #      save_path=opts.save_path,
-        #      save_file_name=opts.save_file_name,
-        #      conf_thres=opts.conf_thres,
-        #      eval=True)
+        test(epoch=epoch,
+             device=device,
+             vis=vis,
+             test_loader=test_loader,
+             model=model,
+             criterion=criterion,
+             save_path=opts.save_path,
+             save_file_name=opts.save_file_name,
+             conf_thres=opts.conf_thres,
+             eval=True)
 
 
 if __name__ == '__main__':
