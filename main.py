@@ -2,6 +2,7 @@ import torch
 import argparse
 import visdom
 from dataset.voc_dataset import VOC_Dataset
+from dataset.coco_dataset import COCO_Dataset
 from torch.utils.data import DataLoader
 import torch.optim as optim
 from model import YOLO_VGG_16
@@ -16,14 +17,15 @@ def main():
     # 1. argparse
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', type=int, default=200)
-    parser.add_argument('--lr', type=float, default=1e-5)
+    parser.add_argument('--lr', type=float, default=1e-4)
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--num_workers', type=int, default=2)
-    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
+    parser.add_argument('--save_file_name', type=str, default='yolo_vgg_16')
     parser.add_argument('--conf_thres', type=float, default=0.01)
     parser.add_argument('--save_path', type=str, default='./saves')
-    parser.add_argument('--start_epoch', type=int, default=150)  # to resume
-
+    parser.add_argument('--start_epoch', type=int, default=0)  # to resume
+    parser.add_argument('--num_classes', type=int, default=80)
+    parser.add_argument('--dataset_type', type=str, default='coco', help='which dataset you want to use VOC or COCO')
     opts = parser.parse_args()
     print(opts)
 
@@ -34,8 +36,12 @@ def main():
     vis = visdom.Visdom()
 
     # 4. dataset
-    train_set = VOC_Dataset(root="D:\Data\VOC_ROOT", split='TRAIN')
-    test_set = VOC_Dataset(root="D:\Data\VOC_ROOT", split='TEST')
+    if opts.dataset_type == 'voc':
+        train_set = VOC_Dataset(root="D:\Data\VOC_ROOT", split='TRAIN')
+        test_set = VOC_Dataset(root="D:\Data\VOC_ROOT", split='TEST')
+    elif opts.dataset_type == 'coco':
+        train_set = COCO_Dataset()
+        test_set = COCO_Dataset()
 
     # 5. dataloader
     train_loader = DataLoader(dataset=train_set,
@@ -51,10 +57,10 @@ def main():
                              shuffle=False)
 
     # 6. model
-    model = YOLO_VGG_16().to(device)
+    model = YOLO_VGG_16(num_classes=opts.num_classes).to(device)
 
     # 7. criterion
-    criterion = Yolo_Loss(num_classes=20)
+    criterion = Yolo_Loss(num_classes=opts.num_classes)
     # 8. optimizer
     optimizer = optim.SGD(params=model.parameters(),
                           lr=opts.lr,
@@ -63,15 +69,15 @@ def main():
 
     # 9. scheduler
     scheduler = StepLR(optimizer=optimizer, step_size=100, gamma=0.1)
-    scheduler = None
+    # scheduler = None
 
     # 10. resume
     if opts.start_epoch != 0:
 
         checkpoint = torch.load(os.path.join(opts.save_path, opts.save_file_name) + '.{}.pth.tar'
-                                .format(opts.start_epoch - 1))          # train
-        model.load_state_dict(checkpoint['model_state_dict'])           # load model state dict
-        # optimizer.load_state_dict(checkpoint['optimizer_state_dict'])    # load optim state dict
+                                .format(opts.start_epoch - 1))           # train
+        model.load_state_dict(checkpoint['model_state_dict'])            # load model state dict
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])    # load optim state dict
         if scheduler is not None:
             scheduler.load_state_dict(checkpoint['scheduler_state_dict'])    # load sched state dict
         print('\nLoaded checkpoint from epoch %d.\n' % (int(opts.start_epoch) - 1))
@@ -98,16 +104,16 @@ def main():
             scheduler.step()
 
         # 12. test
-        test(epoch=epoch,
-             device=device,
-             vis=vis,
-             test_loader=test_loader,
-             model=model,
-             criterion=criterion,
-             save_path=opts.save_path,
-             save_file_name=opts.save_file_name,
-             conf_thres=opts.conf_thres,
-             eval=True)
+        # test(epoch=epoch,
+        #      device=device,
+        #      vis=vis,
+        #      test_loader=test_loader,
+        #      model=model,
+        #      criterion=criterion,
+        #      save_path=opts.save_path,
+        #      save_file_name=opts.save_file_name,
+        #      conf_thres=opts.conf_thres,
+        #      eval=True)
 
 
 if __name__ == '__main__':

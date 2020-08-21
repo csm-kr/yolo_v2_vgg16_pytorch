@@ -11,7 +11,12 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
     model.train()
 
     # 10. train
-    for idx, (images, boxes, labels, _) in enumerate(train_loader):
+    for idx, datas in enumerate(train_loader):
+
+        images = datas[0]
+        boxes = datas[1]
+        labels = datas[2]
+
         images = images.cuda()
         boxes = [b.to(device) for b in boxes]
         labels = [l.to(device) for l in labels]
@@ -30,14 +35,13 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
             lr = param_group['lr']
 
         # for each steps
-        if idx % 100 == 0:
+        if idx % 10 == 0:
             print('Epoch: [{0}]\t'
                   'Step: [{1}/{2}]\t'
                   'Loss: {loss:.4f}\t'
                   'Learning rate: {lr:.7f} s \t'
-                  'Img size: {3} \t'
                   'Time : {time:.4f}\t'
-                  .format(epoch, idx, len(train_loader), train_loader.dataset.img_size,
+                  .format(epoch, idx, len(train_loader),
                           loss=loss,
                           lr=lr,
                           time=toc))
