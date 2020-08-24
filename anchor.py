@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+from utils import device
 
 
 def make_center_anchors(anchors_wh, grid_size=13):
@@ -15,7 +16,7 @@ def make_center_anchors(anchors_wh, grid_size=13):
 
     xy = xy.view(grid_size, grid_size, 1, 2).expand(grid_size, grid_size, 5, 2).type(torch.float32)  # centor
     wh = wh.view(1, 1, 5, 2).expand(grid_size, grid_size, 5, 2).type(torch.float32)  # w, h
-    center_anchors = torch.cat([xy, wh], dim=3).cuda()
+    center_anchors = torch.cat([xy, wh], dim=3).to(device)
     # cy cx w h
 
     """

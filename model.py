@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from torchvision.models import vgg16_bn
+from utils import device
 
 
 class YOLO_VGG_16(nn.Module):
@@ -77,9 +78,9 @@ class YOLO_VGG_16(nn.Module):
 
 
 if __name__ == '__main__':
-    model = YOLO_VGG_16().cuda()
+    model = YOLO_VGG_16().to(device)
     print(model)
-    image = torch.randn([1, 3, 416, 416]).cuda()
+    image = torch.randn([1, 3, 416, 416]).to(device)
     print(model(image).size())
 
 

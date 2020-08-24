@@ -10,6 +10,7 @@ from loss import Yolo_Loss
 import os
 from torch.optim.lr_scheduler import StepLR
 from train import train
+from utils import device
 from test_for_coco import test
 
 
@@ -27,12 +28,12 @@ def main():
     parser.add_argument('--num_classes', type=int, default=80)
     parser.add_argument('--dataset_type', type=str, default='coco', help='which dataset you want to use VOC or COCO')
 
-    parser.add_argument('--start_epoch', type=int, default=12)  # to resume
+    parser.add_argument('--start_epoch', type=int, default=16)  # to resume
     opts = parser.parse_args()
     print(opts)
 
     # 2. device
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # device = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
 
     # 3. visdom
     vis = visdom.Visdom()

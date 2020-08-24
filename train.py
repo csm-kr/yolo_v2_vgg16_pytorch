@@ -17,7 +17,7 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
         boxes = datas[1]
         labels = datas[2]
 
-        images = images.cuda()
+        images = images.to(device)
         boxes = [b.to(device) for b in boxes]
         labels = [l.to(device) for l in labels]
 

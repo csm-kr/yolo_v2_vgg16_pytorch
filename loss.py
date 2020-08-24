@@ -2,7 +2,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 from anchor import make_center_anchors
-from utils import find_jaccard_overlap, center_to_corner, corner_to_center
+from utils import find_jaccard_overlap, center_to_corner, corner_to_center, device
 
 
 class Yolo_Loss(nn.Module):
@@ -62,7 +62,7 @@ class Yolo_Loss(nn.Module):
                 # # j-th anchor
                 resp_mask[b, cy, cx, j] = 1
                 gt_xy[b, cy, cx, j, :] = x_y_[n_obj]
-                w_h_ = bwbh[n_obj] / torch.FloatTensor(self.anchors[j]).cuda()   # ratio
+                w_h_ = bwbh[n_obj] / torch.FloatTensor(self.anchors[j]).to(device)   # ratio
                 gt_wh[b, cy, cx, j, :] = w_h_
                 gt_cls[b, cy, cx, j, int(label[n_obj].item())] = 1
 
