@@ -64,7 +64,7 @@ class Yolo_Loss(nn.Module):
                 gt_xy[b, cy, cx, j, :] = x_y_[n_obj]
                 w_h_ = bwbh[n_obj] / torch.FloatTensor(self.anchors[j]).cuda()   # ratio
                 gt_wh[b, cy, cx, j, :] = w_h_
-                gt_cls[b, cy, cx, j, int(label[n_obj].item()) - 1] = 1
+                gt_cls[b, cy, cx, j, int(label[n_obj].item())] = 1
 
             pred_xy_ = pred_xy[b]
             pred_wh_ = pred_wh[b]

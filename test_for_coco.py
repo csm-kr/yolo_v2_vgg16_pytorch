@@ -84,11 +84,19 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
 
                     for i in range(len(boxes)):
                         print(classes[i])
-                        plt.text(x=boxes[i][0] * 416,
-                                 y=boxes[i][1] * 416,
-                                 s=test_loader.dataset.labels[int(classes[i].item())] + str(scores[i].item()),
-                                 fontsize=10,
-                                 bbox=dict(facecolor='red', alpha=0.5))
+                        if int(classes[i]) == 79 and scores[i] == 0:
+                            plt.text(x=boxes[i][0] * 416,
+                                     y=boxes[i][1] * 416,
+                                     s='background' + str(scores[i].item()),
+                                     fontsize=10,
+                                     bbox=dict(facecolor='red', alpha=0.5))
+
+                        else:
+                            plt.text(x=boxes[i][0] * 416,
+                                     y=boxes[i][1] * 416,
+                                     s=test_loader.dataset.labels[int(classes[i].item())] + str(scores[i].item()),
+                                     fontsize=10,
+                                     bbox=dict(facecolor='red', alpha=0.5))
 
                         plt.gca().add_patch(Rectangle(xy=(boxes[i][0] * 416, boxes[i][1] * 416),
                                                       width=boxes[i][2] * 416 - boxes[i][0] * 416,
@@ -125,7 +133,8 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
                         'bbox'        : pred_box.tolist(),
                     }
                     results.append(coco_result)
-                print('{}/{}'.format(idx, test_loader.dataset.__len__()))
+                if idx % 1000 == 0:
+                    print('{}/{}'.format(idx, test_loader.dataset.__len__()))
                 # print('{}/{}'.format(idx, test_loader.dataset.__len__()), end='\r')  # end='\r' 을 사용하면 애니메이션처럼!
 
         # if not len(results):
@@ -151,10 +160,10 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
 if __name__ == "__main__":
     # 1. argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test_epoch', type=int, default=1)
+    parser.add_argument('--test_epoch', type=int, default=14)
     parser.add_argument('--save_path', type=str, default='./saves')
-    parser.add_argument('--save_file_name', type=str, default='yolo_vgg_16')
-    parser.add_argument('--conf_thres', type=float, default=0.1)
+    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16_for_coco')
+    parser.add_argument('--conf_thres', type=float, default=0.01)
     test_opts = parser.parse_args()
     print(test_opts)
 
@@ -167,7 +176,7 @@ if __name__ == "__main__":
     vis = None
 
     # 4. data set
-    test_set = COCO_Dataset(set_name='val2017')
+    test_set = COCO_Dataset(set_name='val2017', split='TEST')
     test_loader = torch.utils.data.DataLoader(test_set,
                                               batch_size=1,
                                               collate_fn=test_set.collate_fn,
