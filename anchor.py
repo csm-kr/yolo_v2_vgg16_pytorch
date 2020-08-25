@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from utils import device
+from config import device
 
 
 def make_center_anchors(anchors_wh, grid_size=13):

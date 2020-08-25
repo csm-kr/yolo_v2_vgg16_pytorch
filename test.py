@@ -145,7 +145,7 @@ if __name__ == "__main__":
     parser.add_argument('--save_path', type=str, default='./saves')
     parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
     parser.add_argument('--conf_thres', type=float, default=0.01)
-    from utils import device
+    from config import device
     test_opts = parser.parse_args()
     print(test_opts)
 

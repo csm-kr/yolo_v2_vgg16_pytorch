@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torchvision.models import vgg16_bn
-from utils import device
+from config import device
 
 
 class YOLO_VGG_16(nn.Module):

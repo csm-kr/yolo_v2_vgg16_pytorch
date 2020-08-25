@@ -10,7 +10,7 @@ from dataset.trasform import transform_COCO
 from PIL import Image
 
 import matplotlib
-matplotlib.use('TkAgg')
+# matplotlib.use('TkAgg')
 from matplotlib.patches import Rectangle
 
 

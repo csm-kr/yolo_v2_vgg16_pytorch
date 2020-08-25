@@ -12,8 +12,7 @@ from dataset.trasform import transform
 
 class VOC_Dataset(data.Dataset):
 
-    class_names = ('__background__',
-                   'aeroplane', 'bicycle', 'bird', 'boat',
+    class_names = ('aeroplane', 'bicycle', 'bird', 'boat',
                    'bottle', 'bus', 'car', 'cat', 'chair',
                    'cow', 'diningtable', 'dog', 'horse',
                    'motorbike', 'person', 'pottedplant',
@@ -162,7 +161,7 @@ class VOC_Dataset(data.Dataset):
 
 if __name__ == "__main__":
 
-    train_set = VOC_Dataset("D:\Data\VOC_ROOT", split='TRAIN')
+    train_set = VOC_Dataset("/home/cvmlserver3/Sungmin/data/VOC_ROOT", split='TRAIN')
     train_loader = torch.utils.data.DataLoader(train_set,
                                                batch_size=1,
                                                collate_fn=train_set.collate_fn,

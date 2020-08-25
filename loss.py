@@ -2,7 +2,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 from anchor import make_center_anchors
-from utils import find_jaccard_overlap, center_to_corner, corner_to_center, device
+from utils import find_jaccard_overlap, center_to_corner, corner_to_center
+from config import device
 
 
 class Yolo_Loss(nn.Module):
