@@ -63,7 +63,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
                 classes = classes.cpu()
                 scores = scores.cpu()
 
-                visualization = False
+                visualization = True
                 if visualization:
                     # 0. permute
                     images = images.cpu()

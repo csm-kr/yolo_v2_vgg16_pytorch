@@ -69,8 +69,6 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
                 bbox, cls, scores = make_pred_bbox(preds=preds, conf_threshold=conf_thres)
 
                 # coco
-                boxes, classes, scores = make_pred_bbox_for_COCO(preds, conf_threshold=conf_thres)
-
                 det_img_name.append(img_names[0])
                 det_additional.append(additional_info[0])
 
@@ -122,8 +120,8 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
                       .format(epoch,
                               idx, len(test_loader),
                               time=toc))
-
-        mAP = voc_eval("D:\Data\VOC_ROOT\TEST\VOC2007\Annotations", det_img_name, det_additional, det_boxes, det_scores, det_labels)
+        ubuntu_test_root = "/home/cvmlserver3/Sungmin/data/VOC_ROOT/TEST/VOC2007/Annotations"
+        mAP = voc_eval(ubuntu_test_root, det_img_name, det_additional, det_boxes, det_scores, det_labels)
 
         if vis is not None:
             # loss plot
@@ -141,9 +139,9 @@ if __name__ == "__main__":
 
     # 1. argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test_epoch', type=int, default=149)
+    parser.add_argument('--test_epoch', type=int, default=99)
     parser.add_argument('--save_path', type=str, default='./saves')
-    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
+    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16_voc')
     parser.add_argument('--conf_thres', type=float, default=0.01)
     from config import device
     test_opts = parser.parse_args()
@@ -158,7 +156,8 @@ if __name__ == "__main__":
     vis = None
 
     # 4. data set
-    test_set = VOC_Dataset(root="D:\Data\VOC_ROOT", split='TEST')
+    ubuntu_root = "/home/cvmlserver3/Sungmin/data/VOC_ROOT"
+    test_set = VOC_Dataset(root=ubuntu_root, split='TEST')
     test_loader = torch.utils.data.DataLoader(test_set,
                                               batch_size=1,
                                               collate_fn=test_set.collate_fn,

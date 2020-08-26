@@ -10,6 +10,7 @@ from loss import Yolo_Loss
 import os
 from torch.optim.lr_scheduler import StepLR
 from train import train
+from test import test
 from config import device
 from test_for_coco import test
 
