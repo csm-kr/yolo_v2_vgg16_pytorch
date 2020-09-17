@@ -113,7 +113,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
             toc = time.time() - tic
             # ---------- print ----------
             # for each steps
-            if idx % 100 == 0:
+            if idx % 1000 == 0:
                 print('Epoch: [{0}]\t'
                       'Step: [{1}/{2}]\t'
                       'Time : {time:.4f}\t'
@@ -139,7 +139,7 @@ if __name__ == "__main__":
 
     # 1. argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test_epoch', type=int, default=99)
+    parser.add_argument('--test_epoch', type=int, default=110)
     parser.add_argument('--save_path', type=str, default='./saves')
     parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16_voc')
     parser.add_argument('--conf_thres', type=float, default=0.01)

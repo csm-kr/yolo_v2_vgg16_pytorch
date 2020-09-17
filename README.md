@@ -31,7 +31,7 @@ The goal of this repo. is to re-implement a famous one-stage object detection, y
 |methods        | Traning Dataset              | Testing Dataset | Resolution | mAP     | Fps |
 |---------------|------------------------------|:---------------:|:----------:|:-------:|:---:|
 |original papers| VOC2007 train + VOC2012 train|   VOC2007 test  |  416 x 416 |   76.8  | 67  |
-|ours           | VOC2007 train + VOC2012 train|   VOC2007 test  |  416 x 416 | **77.3**| 19  |
+|ours           | VOC2007 train + VOC2012 train|   VOC2007 test  |  416 x 416 | **77.3**| 46  |
 
 ![result](https://user-images.githubusercontent.com/18729104/87284497-65c99300-c531-11ea-881d-e4ab1917b49a.gif)
 

@@ -85,7 +85,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
     anchors_wh = [(1.3221, 1.73145), (3.19275, 4.00944), (5.05587, 8.09892), (9.47112, 4.84053), (11.2364, 10.0071)]
     anchors = make_center_anchors(anchors_wh)  # cy, cx, w, h - [845, 4]
 
-    cxcy_anchors = anchors         # cxcy anchors 0~1
+    cxcy_anchors = anchors.cpu()         # cxcy anchors 0~1
 
     anchors_xy = cxcy_anchors[..., :2]  # torch.Size([13, 13, 5, 2])
     anchors_wh = cxcy_anchors[..., 2:]  # torch.Size([13, 13, 5, 2])

@@ -10,14 +10,14 @@ from dataset.trasform import transform_COCO
 from PIL import Image
 
 import matplotlib
-# matplotlib.use('TkAgg')
+matplotlib.use('TkAgg')
 from matplotlib.patches import Rectangle
 
 
 class COCO_Dataset(Dataset):
     """Coco dataset."""
 
-    def __init__(self, root_dir='D:\Data\coco', set_name='train2017', split='TRAIN'):
+    def __init__(self, root_dir='D:\Data\coco', set_name='val2017', split='TRAIN'):
 
         """
         Args:
@@ -81,7 +81,7 @@ class COCO_Dataset(Dataset):
 
     def __getitem__(self, idx):
 
-        visualize = False
+        visualize = True
 
         image, (w, h) = self.load_image(idx)
         annotation = self.load_annotations(idx)

@@ -12,7 +12,7 @@ from torch.optim.lr_scheduler import StepLR
 from train import train
 from test import test
 from config import device
-from test_for_coco import test
+# from test_for_coco import test
 
 
 def main():
@@ -116,16 +116,16 @@ def main():
         if scheduler is not None:
             scheduler.step()
 
-        # test(epoch=epoch,
-        #      device=device,
-        #      vis=vis,
-        #      test_loader=test_loader,
-        #      model=model,
-        #      criterion=criterion,
-        #      save_path=opts.save_path,
-        #      save_file_name=opts.save_file_name,
-        #      conf_thres=opts.conf_thres,
-        #      eval=True)
+        test(epoch=epoch,
+             device=device,
+             vis=vis,
+             test_loader=test_loader,
+             model=model,
+             criterion=criterion,
+             save_path=opts.save_path,
+             save_file_name=opts.save_file_name,
+             conf_thres=opts.conf_thres,
+             eval=True)
 
 
 if __name__ == '__main__':

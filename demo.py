@@ -62,7 +62,7 @@ def demo(original_image, model, conf_thres):
 
     # Forward prop. # make batch 1
     preds = model(image.unsqueeze(0))
-    preds = preds.permute(0, 2, 3, 1)  # B, 13, 13, 125
+    preds = preds.permute(0, 2, 3, 1).cpu()  # B, 13, 13, 125
     bbox, cls, scores = make_pred_bbox(preds=preds, conf_threshold=conf_thres)  # 가장큰 네모 1개 뽑기 not batch score
 
     # detection time
@@ -85,11 +85,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--demo_img_path', type=str, default='D:\Data\VOC_ROOT\TEST\VOC2007\JPEGImages')
     parser.add_argument('--demo_img_type', type=str, default='jpg')
-    parser.add_argument('--visualization', type=bool, default=True)
+    parser.add_argument('--visualization', type=bool, default=False)
     parser.add_argument('--epoch', type=int, default=199)
     parser.add_argument('--save_path', type=str, default='./saves')
     parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
-    parser.add_argument('--conf_thres', type=float, default=0.35)
+    parser.add_argument('--conf_thres', type=float, default=0.01)
     demo_opts = parser.parse_args()
     print(demo_opts)
 
