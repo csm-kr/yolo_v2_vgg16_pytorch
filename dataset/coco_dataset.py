@@ -81,7 +81,7 @@ class COCO_Dataset(Dataset):
 
     def __getitem__(self, idx):
 
-        visualize = True
+        visualize = False
 
         image, (w, h) = self.load_image(idx)
         annotation = self.load_annotations(idx)

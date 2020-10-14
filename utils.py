@@ -150,6 +150,15 @@ def make_pred_bbox(preds, conf_threshold=0.35):
 
 
 def make_pred_bbox_for_COCO(preds, conf_threshold=0.35):
+    """
+    batch 1 에 대한 boxes 와 labels 와 scores 를 찾는 함수
+    :param preds: [1, 13, 13, (80 + 5) * 5]
+    :return:
+    after nms, remnant object is num_objects <= 200
+    image_boxes: [num_objects, 4]
+    image_labels:[num_objects]
+    image_scores:[num_objects]
+    """
 
     pred_targets = preds.view(-1, 13, 13, 5, 5 + 80)
     pred_xy = pred_targets[..., :2].sigmoid()  # sigmoid(tx ty)  0, 1

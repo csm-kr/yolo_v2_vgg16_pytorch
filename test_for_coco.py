@@ -63,7 +63,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
                 classes = classes.cpu()
                 scores = scores.cpu()
 
-                visualization = True
+                visualization = False
                 if visualization:
                     # 0. permute
                     images = images.cpu()
@@ -153,6 +153,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
         coco_eval.evaluate()
         coco_eval.accumulate()
         coco_eval.summarize()
+        ap = coco_eval.stats
 
         return
 
@@ -160,10 +161,10 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
 if __name__ == "__main__":
     # 1. argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test_epoch', type=int, default=14)
+    parser.add_argument('--test_epoch', type=int, default=0)
     parser.add_argument('--save_path', type=str, default='./saves')
-    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16_for_coco')
-    parser.add_argument('--conf_thres', type=float, default=0.01)
+    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16_coco')
+    parser.add_argument('--conf_thres', type=float, default=0.1)
     from config import device
     test_opts = parser.parse_args()
     print(test_opts)
