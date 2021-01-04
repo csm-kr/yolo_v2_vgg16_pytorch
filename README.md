@@ -18,7 +18,7 @@ The goal of this repo. is to re-implement a famous one-stage object detection, y
 
 ### Quick start detection 
 
-1\. download model weight from https://drive.google.com/file/d/1cOadYYkwXKzAf7YGYokEAEn1ofzx4QDX/view?usp=sharing move into ./saves
+1\. download model weight from https://livecauac-my.sharepoint.com/:u:/g/personal/csm8167_cau_ac_kr/EWshHPoe9-tOgLUtreWDUeEBmMwMXaAA1VT1rniLf_x7Sg?e=kPEY9b move into ./saves
 
 2\. prefare PATH that contains the image you want to detect  -- PATH (e.g. 'D:\image_path')
 
@@ -149,7 +149,7 @@ usage: main.py [-h] [--batch_size] [--conf_thres]
 ```
 
 before test and demo, we must have trained .pth file(weight params) you can download 149 epoch weights
-at https://drive.google.com/file/d/1cOadYYkwXKzAf7YGYokEAEn1ofzx4QDX/view?usp=sharing
+at https://livecauac-my.sharepoint.com/:u:/g/personal/csm8167_cau_ac_kr/EWshHPoe9-tOgLUtreWDUeEBmMwMXaAA1VT1rniLf_x7Sg?e=kPEY9b
 
 and then make ./saves file place the weight in the file.
 
