@@ -138,12 +138,14 @@ usage: main.py [-h] [--batch_size] [--conf_thres]
   -h, --help            show this help message and exit
   --batch_size          for training batch size, test batch is only 1.
   --conf_thres          for testing, confience threshold, default 0.01 
-  --epochs              whole traning epochs 
-  --lr                  initial learning rate (default 1e-3) 
-  --num_workers         dataset num_workers (default 2)
+  --epochs              whole traning epochs   (default 200)
+  --lr                  initial learning rate (default 1e-4) 
+  --num_workers         dataset num_workers (default 0)
   --save_file_name      when you do experiment, you can change save_file_name to distinguish other pths.
   --save_path           the path to save .pth file
   --data_path           data path for training and testing refer to Implementations/dataset (default="D:\Data\VOC_ROOT")
+  --num_classes         number of dataset classes (voc : 20, coco:80) (default=20)
+  --dataset_type        which dataset you want to use VOC or COC0 (default='voc')
   --start_epoch         when you resume, set the start epochs. 
 ```
 
@@ -156,7 +158,7 @@ and then make ./saves file place the weight in the file.
 
 ```
 # python test.py 
-usage: test.py [-h] [--test_path] [--test_epoch] 
+usage: test.py [-h] [--data_path] [--test_epoch] 
                [--save_path] [--save_file_name] [--conf_thres]
 
   -h, --help            show this help message and exit
