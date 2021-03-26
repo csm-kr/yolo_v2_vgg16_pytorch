@@ -140,7 +140,7 @@ usage: main.py [-h] [--batch_size] [--conf_thres]
   --conf_thres          for testing, confience threshold, default 0.01 
   --epochs              whole traning epochs   (default 200)
   --lr                  initial learning rate (default 1e-4) 
-  --num_workers         dataset num_workers (default 0)
+  --num_workers         dataset num_workers (default 4)
   --save_file_name      when you do experiment, you can change save_file_name to distinguish other pths.
   --save_path           the path to save .pth file
   --data_path           data path for training and testing refer to Implementations/dataset (default="D:\Data\VOC_ROOT")
