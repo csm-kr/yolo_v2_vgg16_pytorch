@@ -13,7 +13,6 @@ from model import YOLO_VGG_16
 
 
 def test(epoch, device, vis, test_loader, model, criterion, opts, eval=False):
-# def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file_name, conf_thres, opts, eval=False):
 
     # ---------- load ----------
     print('Validation of epoch [{}]'.format(epoch))
