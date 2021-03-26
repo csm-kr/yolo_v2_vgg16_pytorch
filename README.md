@@ -28,10 +28,10 @@ The goal of this repo. is to re-implement a famous one-stage object detection, y
 
 ### Results
 
-|methods        | Traning Dataset              | Testing Dataset | Resolution | mAP     | Fps |
-|---------------|------------------------------|:---------------:|:----------:|:-------:|:---:|
-|original papers| VOC2007 train + VOC2012 train|   VOC2007 test  |  416 x 416 |   76.8  | 67  |
-|ours           | VOC2007 train + VOC2012 train|   VOC2007 test  |  416 x 416 | **77.3**| 46  |
+|methods        | Traning Dataset              | Testing Dataset | Resolution | mAP      | Fps |
+|---------------|------------------------------|:---------------:|:----------:|:-------: |:---:|
+|original papers| VOC2007 train + VOC2012 train|   VOC2007 test  |  416 x 416 |   76.8   | 67  |
+|ours           | VOC2007 train + VOC2012 train|   VOC2007 test  |  416 x 416 | **77.03**| 58  |
 
 ![result](https://user-images.githubusercontent.com/18729104/87284497-65c99300-c531-11ea-881d-e4ab1917b49a.gif)
 
@@ -119,9 +119,6 @@ learning rate decay
 |----------------------|:-------------:|
 |         000-099      |      1e-4     |
 |         100-149      |      1e-5     |
-|----------------------|:-------------:|
-|         000-149      |      1e-4     |
-|         149-199      |      1e-5     |
 
 - ##### Evaluation
 
@@ -135,7 +132,8 @@ evaluation is a voc metric, mAP(iou>0.5) and exactly same to official python mAP
 # python main.py 
 usage: main.py [-h] [--batch_size] [--conf_thres] 
                [--epochs] [--lr] [--num_workers]
-               [--save_file_name] [--save_path] [--start_epoch]
+               [--save_file_name] [--save_path] [--data_path]
+               [--start_epoch]
 
   -h, --help            show this help message and exit
   --batch_size          for training batch size, test batch is only 1.
@@ -145,6 +143,7 @@ usage: main.py [-h] [--batch_size] [--conf_thres]
   --num_workers         dataset num_workers (default 2)
   --save_file_name      when you do experiment, you can change save_file_name to distinguish other pths.
   --save_path           the path to save .pth file
+  --data_path           data path for training and testing refer to Implementations/dataset (default="D:\Data\VOC_ROOT")
   --start_epoch         when you resume, set the start epochs. 
 ```
 
@@ -157,10 +156,11 @@ and then make ./saves file place the weight in the file.
 
 ```
 # python test.py 
-usage: test.py [-h] [--test_epoch] [--save_path] 
-               [--save_file_name] [--conf_thres]
+usage: test.py [-h] [--test_path] [--test_epoch] 
+               [--save_path] [--save_file_name] [--conf_thres]
 
   -h, --help            show this help message and exit
+  --data_path           for testing, voc 2007 path (because split =='TEST') (default="D:\Data\VOC_ROOT")
   --test_epoch          for testing, which epoch param do we get
   --save_path           for testing, params path (default './saves') 
   --save_file_name      save_file_name to distinguish other params. (default 'yolo_v2_vgg_16')
@@ -172,13 +172,13 @@ usage: test.py [-h] [--test_epoch] [--save_path]
 ```
 # python demo.py 
 usage: demo.py [-h] [--demo_img_path] [--demo_img_type] 
-               [--visualization] [--epoch] [--save_path]
+               [--vis] [--epoch] [--save_path]
                [--save_file_name] [--conf_thres]
 
   -h, --help            show this help message and exit
   --demo_img_path       The path that contains the image you want to detect
   --demo_img_type       The type of images you want to detect
-  --visualization       Whether to visualize (default True)
+  --vis                 Whether to visualize (default False)
   --epoch               for demo, which epoch param do we get
   --save_path           for demo, params path (default './saves') 
   --save_file_name      save_file_name to distinguish other params. (default 'yolo_v2_vgg_16')

@@ -85,11 +85,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--demo_img_path', type=str, default='D:\Data\VOC_ROOT\TEST\VOC2007\JPEGImages')
     parser.add_argument('--demo_img_type', type=str, default='jpg')
-    parser.add_argument('--visualization', type=bool, default=False)
-    parser.add_argument('--epoch', type=int, default=199)
+    parser.set_defaults(visualization=False)
+    parser.add_argument('--vis', dest='visualization', action='store_true')
+    parser.add_argument('--epoch', type=int, default=149)
     parser.add_argument('--save_path', type=str, default='./saves')
     parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
-    parser.add_argument('--conf_thres', type=float, default=0.01)
+    parser.add_argument('--conf_thres', type=float, default=0.35)
     demo_opts = parser.parse_args()
     print(demo_opts)
 
@@ -125,7 +126,7 @@ if __name__ == '__main__':
             boxes, labels, scores, det_time = demo(img, model=model, conf_thres=demo_opts.conf_thres)
 
             name = os.path.basename(img_path).split('.')[0]  # .replace('.jpg', '.txt')
-            save_det_txt_for_mAP(file_name=name, bbox=boxes, cls=labels, score=scores)
+            # save_det_txt_for_mAP(file_name=name, bbox=boxes, cls=labels, score=scores)
 
             total_time += det_time
             if j % 100 == 0:

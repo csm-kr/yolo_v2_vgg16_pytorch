@@ -4,7 +4,7 @@ import time
 import numpy as np
 
 
-def train(epoch, device, vis, train_loader, model, criterion, optimizer, scheduler, save_path, save_file_name):
+def train(epoch, device, vis, train_loader, model, criterion, optimizer, scheduler, opts):
 
     print('Training of epoch [{}]'.format(epoch))
     tic = time.time()
@@ -58,8 +58,8 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
                                    legend=['Total Loss', 'xy_loss', 'wh_loss', 'conf_loss', 'no_conf_loss',
                                            'cls_loss']))
 
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
+    if not os.path.exists(opts.save_path):
+        os.mkdir(opts.save_path)
     checkpoint = {'epoch': epoch,
                   'model_state_dict': model.state_dict(),
                   'optimizer_state_dict': optimizer.state_dict()}
@@ -69,7 +69,7 @@ def train(epoch, device, vis, train_loader, model, criterion, optimizer, schedul
                       'model_state_dict': model.state_dict(),
                       'optimizer_state_dict': optimizer.state_dict(),
                       'scheduler_state_dict': scheduler.state_dict()}
-    torch.save(checkpoint, os.path.join(save_path, save_file_name) + '.{}.pth.tar'.format(epoch))
+    torch.save(checkpoint, os.path.join(opts.save_path, opts.save_file_name) + '.{}.pth.tar'.format(epoch))
 
 
 

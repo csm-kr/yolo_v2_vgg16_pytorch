@@ -2,7 +2,6 @@ import torch
 import argparse
 import visdom
 from dataset.voc_dataset import VOC_Dataset
-from dataset.coco_dataset import COCO_Dataset
 from torch.utils.data import DataLoader
 import torch.optim as optim
 from model import YOLO_VGG_16
@@ -12,7 +11,6 @@ from torch.optim.lr_scheduler import StepLR
 from train import train
 from test import test
 from config import device
-# from test_for_coco import test
 
 
 def main():
@@ -22,38 +20,30 @@ def main():
     parser.add_argument('--lr', type=float, default=1e-4)
     parser.add_argument('--batch_size', type=int, default=16)
     parser.add_argument('--num_workers', type=int, default=0)
-    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16_coco')
+    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
     parser.add_argument('--conf_thres', type=float, default=0.01)
+
+    parser.add_argument('--data_path', type=str, default="D:\Data\VOC_ROOT")
     parser.add_argument('--save_path', type=str, default='./saves')
 
-    parser.add_argument('--num_classes', type=int, default=80)
-    parser.add_argument('--dataset_type', type=str, default='coco', help='which dataset you want to use VOC or COCO')
-    parser.add_argument('--os_type', type=str, default='ubuntu', help='which OS you use window or ubuntu')
+    parser.add_argument('--num_classes', type=int, default=20)
+    parser.add_argument('--dataset_type', type=str, default='voc', help='which dataset you want to use VOC or COCO')
 
     parser.add_argument('--start_epoch', type=int, default=0)  # to resume
     opts = parser.parse_args()
     print(opts)
-
-    # 2. device
-    # device = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
 
     # 3. visdom
     vis = visdom.Visdom()
 
     # 4. dataset
     if opts.dataset_type == 'voc':
-        if opts.os_type == 'ubuntu':
-            ubunto_root = "/home/cvmlserver3/Sungmin/data/VOC_ROOT"
-            train_set = VOC_Dataset(root=ubunto_root, split='TRAIN')
-            test_set = VOC_Dataset(root=ubunto_root, split='TEST')
-        else:
-            windom_root = "D:\Data\VOC_ROOT"
-            train_set = VOC_Dataset(root=windom_root, split='TRAIN')
-            test_set = VOC_Dataset(root=windom_root, split='TEST')
+        train_set = VOC_Dataset(root=opts.data_path, split='TRAIN')
+        test_set = VOC_Dataset(root=opts.data_path, split='TEST')
 
-    elif opts.dataset_type == 'coco':
-        train_set = COCO_Dataset(set_name='val2017', split='TRAIN')
-        test_set = COCO_Dataset(set_name='val2017', split='TEST')
+    # elif opts.dataset_type == 'coco':
+    #     train_set = COCO_Dataset(set_name='val2017', split='TRAIN')
+    #     test_set = COCO_Dataset(set_name='val2017', split='TEST')
 
     # 5. dataloader
     train_loader = DataLoader(dataset=train_set,
@@ -110,8 +100,7 @@ def main():
               criterion=criterion,
               optimizer=optimizer,
               scheduler=scheduler,
-              save_path=opts.save_path,
-              save_file_name=opts.save_file_name)
+              opts=opts)
 
         if scheduler is not None:
             scheduler.step()
@@ -122,9 +111,7 @@ def main():
              test_loader=test_loader,
              model=model,
              criterion=criterion,
-             save_path=opts.save_path,
-             save_file_name=opts.save_file_name,
-             conf_thres=opts.conf_thres,
+             opts=opts,
              eval=True)
 
 

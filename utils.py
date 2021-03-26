@@ -74,6 +74,8 @@ def find_intersection(set_1, set_2):
 
 def make_pred_bbox(preds, conf_threshold=0.35):
 
+    # assign to cpu
+    preds = preds.cpu()
     pred_targets = preds.view(-1, 13, 13, 5, 5 + 20)
     pred_xy = pred_targets[..., :2].sigmoid()  # sigmoid(tx ty)  0, 1
     pred_wh = pred_targets[..., 2:4].exp()  # 2, 3
@@ -85,6 +87,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
     anchors_wh = [(1.3221, 1.73145), (3.19275, 4.00944), (5.05587, 8.09892), (9.47112, 4.84053), (11.2364, 10.0071)]
     anchors = make_center_anchors(anchors_wh)  # cy, cx, w, h - [845, 4]
 
+    # assign to cpu
     cxcy_anchors = anchors.cpu()         # cxcy anchors 0~1
 
     anchors_xy = cxcy_anchors[..., :2]  # torch.Size([13, 13, 5, 2])

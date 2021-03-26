@@ -12,12 +12,13 @@ from loss import Yolo_Loss
 from model import YOLO_VGG_16
 
 
-def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file_name, conf_thres, eval=False):
+def test(epoch, device, vis, test_loader, model, criterion, opts, eval=False):
+# def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file_name, conf_thres, opts, eval=False):
 
     # ---------- load ----------
     print('Validation of epoch [{}]'.format(epoch))
     model.eval()
-    check_point = torch.load(os.path.join(save_path, save_file_name) + '.{}.pth.tar'.format(epoch))
+    check_point = torch.load(os.path.join(opts.save_path, opts.save_file_name) + '.{}.pth.tar'.format(epoch))
     state_dict = check_point['model_state_dict']
     model.load_state_dict(state_dict, strict=True)
 
@@ -32,18 +33,11 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
     tic = time.time()
     with torch.no_grad():
 
-        # for COCO evaluation
-        results = []
-        image_ids = []
-
         for idx, datas in enumerate(test_loader):
             '''
             + VOC dataset
             for VOC datasets, datas including follows:
             (images, boxes, labels, difficulties, img_names, additional_info)
-            
-            + COCO dataset
-            but COCO dataset, (images, boxes, labels)
             '''
             images = datas[0]
             boxes = datas[1]
@@ -66,7 +60,7 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
             loss, _ = criterion(preds, boxes, labels)
             # ---------- eval ----------
             if eval:
-                bbox, cls, scores = make_pred_bbox(preds=preds, conf_threshold=conf_thres)
+                bbox, cls, scores = make_pred_bbox(preds=preds, conf_threshold=opts.conf_thres)
 
                 # coco
                 det_img_name.append(img_names[0])
@@ -120,8 +114,8 @@ def test(epoch, device, vis, test_loader, model, criterion, save_path, save_file
                       .format(epoch,
                               idx, len(test_loader),
                               time=toc))
-        ubuntu_test_root = "/home/cvmlserver3/Sungmin/data/VOC_ROOT/TEST/VOC2007/Annotations"
-        mAP = voc_eval(ubuntu_test_root, det_img_name, det_additional, det_boxes, det_scores, det_labels)
+        annotation_path = os.path.join(opts.data_path, "TEST\VOC2007\Annotations")
+        mAP = voc_eval(annotation_path, det_img_name, det_additional, det_boxes, det_scores, det_labels)
 
         if vis is not None:
             # loss plot
@@ -139,10 +133,12 @@ if __name__ == "__main__":
 
     # 1. argparse
     parser = argparse.ArgumentParser()
-    parser.add_argument('--test_epoch', type=int, default=110)
+    parser.add_argument('--test_epoch', type=int, default=149)
+    parser.add_argument('--data_path', type=str, default="D:\Data\VOC_ROOT")
     parser.add_argument('--save_path', type=str, default='./saves')
-    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16_voc')
+    parser.add_argument('--save_file_name', type=str, default='yolo_v2_vgg_16')
     parser.add_argument('--conf_thres', type=float, default=0.01)
+
     from config import device
     test_opts = parser.parse_args()
     print(test_opts)
@@ -156,8 +152,7 @@ if __name__ == "__main__":
     vis = None
 
     # 4. data set
-    ubuntu_root = "/home/cvmlserver3/Sungmin/data/VOC_ROOT"
-    test_set = VOC_Dataset(root=ubuntu_root, split='TEST')
+    test_set = VOC_Dataset(root=test_opts.data_path, split='TEST')
     test_loader = torch.utils.data.DataLoader(test_set,
                                               batch_size=1,
                                               collate_fn=test_set.collate_fn,
@@ -174,10 +169,8 @@ if __name__ == "__main__":
          test_loader=test_loader,
          model=model,
          criterion=criterion,
-         save_path=test_opts.save_path,
-         save_file_name=test_opts.save_file_name,
-         eval=True,
-         conf_thres=test_opts.conf_thres)
+         opts=test_opts,
+         eval=True)
 
 
 
