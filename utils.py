@@ -16,7 +16,7 @@ color_array = [(0, 136, 221), (100, 56, 231), (155, 27, 31), (30, 236, 215), (22
                (89, 55, 99), (59, 216, 15), (99, 75, 211), (172, 177, 200), (180, 130, 124), (98, 56, 127), (120, 199, 100)]
 
 np.random.seed(0)
-color_array = np.random.randint(256, size=(21, 3))
+color_array = np.random.randint(256, size=(21, 3)) / 255
 
 
 def center_to_corner(cxcy):
@@ -98,7 +98,7 @@ def make_pred_bbox(preds, conf_threshold=0.35):
     pred_bbox = torch.cat([pred_bbox_xy, pred_bbox_wh], dim=-1)  # torch.Size([B, 13, 13, 5, 4])
     pred_bbox = pred_bbox.view(-1, 13 * 13 * 5, 4) / 13.  # rescale 0~1   # [B, 845, 4]  # center_coord.
     pred_cls = F.softmax(pred_cls, dim=-1).view(-1, 13 * 13 * 5, 20)      # [B, 845, 20]
-    pred_conf = pred_conf.view(-1, 13 * 13 * 5)                           # [B, 845]
+    pred_conf = pred_conf.reshape(-1, 13 * 13 * 5)                           # [B, 845]
 
     image_boxes = list()
     image_labels = list()

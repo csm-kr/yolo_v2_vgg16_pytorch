@@ -8,6 +8,9 @@ import cv2
 import time
 from utils import make_pred_bbox, voc_labels_array, device, color_array
 import argparse
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 
 
 def save_det_txt_for_mAP(file_name, bbox, cls, score):
@@ -75,7 +78,7 @@ def demo(original_image, model, conf_thres):
     original_dims = torch.FloatTensor(
         [original_image.width, original_image.height, original_image.width, original_image.height]).unsqueeze(0)
     det_boxes = det_boxes * original_dims
-    det_labels = [voc_labels_array[l] for l in cls.to('cpu').tolist()]
+    det_labels = cls
 
     return det_boxes, det_labels, scores, detection_time
 
@@ -85,7 +88,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--demo_img_path', type=str, default='D:\Data\VOC_ROOT\TEST\VOC2007\JPEGImages')
     parser.add_argument('--demo_img_type', type=str, default='jpg')
-    parser.set_defaults(visualization=False)
+    parser.set_defaults(visualization=True)
+    parser.set_defaults(save_demo=True)
     parser.add_argument('--vis', dest='visualization', action='store_true')
     parser.add_argument('--epoch', type=int, default=149)
     parser.add_argument('--save_path', type=str, default='./saves')
@@ -95,6 +99,7 @@ if __name__ == '__main__':
     print(demo_opts)
 
     visualization = demo_opts.visualization
+    save_demo = demo_opts.save_demo
     epoch = demo_opts.epoch
 
     model = YOLO_VGG_16().to(device)
@@ -133,38 +138,40 @@ if __name__ == '__main__':
                 print("[{}/{}]".format(j, len(img_paths)))
                 print("fps : {:.4f}".format(j / total_time))
 
+            bbox = boxes
+            cls = labels
+
             if visualization:
-                img = cv2.imread(img_path)
-                for i in range(len(boxes)):
+                images = img
 
-                    x_min = boxes[i][0]
-                    y_min = boxes[i][1]
-                    x_max = boxes[i][2]
-                    y_max = boxes[i][3]
+                # 2. RGB to BGR
+                image_np = np.array(images)
 
-                    cv2.rectangle(img,
-                                  pt1=(x_min, y_min),
-                                  pt2=(x_max, y_max),
-                                  color=color_array[voc_labels_array.index(labels[i])].tolist(),
-                                  thickness=2)
+                plt.figure('result_{}'.format(j))
+                plt.imshow(image_np)
 
-                    # text_size
-                    text_size = cv2.getTextSize(labels[i] + ' {:.4f}'.format(scores[i].item()), cv2.FONT_HERSHEY_PLAIN,
-                                                1, 1)[0]
-                    # text_rec
-                    cv2.rectangle(img, (x_min, y_min), (x_min + text_size[0] + 3, y_min + text_size[1] + 4),
-                                  color_array[voc_labels_array.index(labels[i])].tolist(), -1)
+                for i in range(len(bbox)):
+                    print(cls[i])
 
-                    # put text
-                    cv2.putText(img,
-                                text=labels[i] + ' {:.4f}'.format(scores[i].item()),
-                                org=(boxes[i][0] + 10, boxes[i][1] + 10),
-                                fontFace=0, fontScale=0.4,
-                                color=(255, 255, 255))
+                    plt.text(x=bbox[i][0],
+                             y=bbox[i][1],
+                             s=voc_labels_array[int(cls[i].item())] + ' {:.2f}'.format(scores[i]),
+                             fontsize=10,
+                             bbox=dict(facecolor=color_array[int(cls[i])],
+                                       alpha=0.5))
 
-                # cv2.imwrite('{}.jpg'.format(j), img)
-                cv2.imshow('input', img)
-                cv2.waitKey(0)
+                    plt.gca().add_patch(Rectangle(xy=(bbox[i][0], bbox[i][1]),
+                                                  width=bbox[i][2] - bbox[i][0],
+                                                  height=bbox[i][3] - bbox[i][1],
+                                                  linewidth=1,
+                                                  edgecolor=color_array[int(cls[i])],
+                                                  facecolor='none'))
+
+                if save_demo:
+                    os.makedirs('./test_demo', exist_ok=True)
+                    plt.savefig('./test_demo/result_{}.jpg'.format(j))
+
+                plt.show()
 
         print("fps : {:.4f}".format(len(img_paths) / total_time))
 
