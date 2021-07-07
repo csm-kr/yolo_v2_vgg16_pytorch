@@ -103,7 +103,8 @@ if __name__ == '__main__':
     epoch = demo_opts.epoch
 
     model = YOLO_VGG_16().to(device)
-    checkpoint = torch.load(os.path.join(demo_opts.save_path, demo_opts.save_file_name) + '.{}.pth.tar'.format(epoch))
+    checkpoint = torch.load(os.path.join(demo_opts.save_path, demo_opts.save_file_name) + '.{}.pth.tar'.format(epoch),
+                            map_location=device)
     model.load_state_dict(checkpoint['model_state_dict'])
 
     model = model.to(device)

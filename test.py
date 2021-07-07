@@ -17,7 +17,8 @@ def test(epoch, device, vis, test_loader, model, criterion, opts, eval=False):
     # ---------- load ----------
     print('Validation of epoch [{}]'.format(epoch))
     model.eval()
-    check_point = torch.load(os.path.join(opts.save_path, opts.save_file_name) + '.{}.pth.tar'.format(epoch))
+    check_point = torch.load(os.path.join(opts.save_path, opts.save_file_name) + '.{}.pth.tar'.format(epoch),
+                             map_location=device)
     state_dict = check_point['model_state_dict']
     model.load_state_dict(state_dict, strict=True)
 
