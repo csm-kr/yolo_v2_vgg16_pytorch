@@ -18,7 +18,7 @@ The goal of this repo. is to re-implement a famous one-stage object detection, y
 
 ### Quick start detection 
 
-1\. download model weight from https://livecauac-my.sharepoint.com/:u:/g/personal/csm8167_cau_ac_kr/EWshHPoe9-tOgLUtreWDUeEBmMwMXaAA1VT1rniLf_x7Sg?e=0MwAUa move into ./saves
+1\. download model weight from [here](https://livecauac-my.sharepoint.com/:u:/g/personal/csm8167_cau_ac_kr/EWshHPoe9-tOgLUtreWDUeEBmMwMXaAA1VT1rniLf_x7Sg?e=0MwAUa) move into ./saves
 
 2\. prefare PATH that contains the image you want to detect  -- PATH (e.g. 'D:\image_path')
 
